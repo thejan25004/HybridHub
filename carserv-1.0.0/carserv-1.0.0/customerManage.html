@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Management</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <script src="sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="sweetalert2.min.css">
+  <style>
+    .btn-secondary { background-color: #6c757d; border: none; }
+    .btn-secondary:hover { background-color: #5a6268; }
+    .back-to-dashboard {
+      display: flex; align-items: center;
+      color: #4CAF50; text-decoration: none;
+      font-size: 16px; padding: 10px; border-radius: 4px;
+      background-color: #f1f1f1; border: 1px solid #ddd;
+    }
+    .back-to-dashboard:hover { background-color: #e7f7e5; color: #388e3c; }
+  </style>
+</head>
+<body class="container mt-4">
+
+<a href="Admin.html" class="back-to-dashboard">
+  <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+<h2 class="mb-4">Customer Management</h2>
+
+<form id="customerForm">
+  <input type="hidden" id="customerId">
+
+  <div class="mb-3">
+    <label for="userName" class="form-label">User Name:</label>
+    <input type="text" id="userName" class="form-control" required>
+  </div>
+
+
+  <div id="userStatus" style="margin-top: 10px;"></div>
+
+  <div class="mb-3">
+    <label for="userId" class="form-label">User ID:</label>
+    <input type="number" id="userId" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="address" class="form-label">Address:</label>
+    <input type="text" id="address" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="vehicleName" class="form-label">Vehicle Name:</label>
+    <input type="text" id="vehicleName" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="numberPlate" class="form-label">Number Plate:</label>
+    <input type="text" id="numberPlate" class="form-control" required>
+  </div>
+  <button type="button" class="btn btn-success" onclick="saveCustomer()">Save</button>
+  <button type="button" class="btn btn-primary" onclick="updateCustomer()">Update</button>
+  <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+</form>
+
+<hr>
+
+<table class="table table-bordered mt-4">
+  <thead class="table-dark">
+  <tr>
+    <th>ID</th>
+    <th>User ID</th>
+    <th>Address</th>
+    <th>Vehicle Name</th>
+    <th>Number Plate</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody id="customerTableBody"></tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+  let token = localStorage.getItem("authToken");
+  function clearForm() {
+    $("#customerForm")[0].reset();
+    $("#customerId").val("");
+  }
+
+  $(document).ready(function () {
+    loadCustomers();
+  });
+
+  function loadCustomers() {
+    $.ajax({
+      url: "http://localhost:8080/api/v1/customer/getAll",
+      type: "GET",
+      headers: {
+        "Authorization" : "Bearer " + token
+      },
+      success: function (customers) {
+        let tableBody = $("#customerTableBody");
+        tableBody.empty();
+        customers.forEach(customer => {
+          tableBody.append(`
+              <tr>
+                <td>${customer.customerId}</td>
+                <td>${customer.userId}</td>
+                <td>${customer.address}</td>
+                <td>${customer.vehicleName}</td>
+                <td>${customer.numberPlate}</td>
+                <td>
+                  <button class="btn btn-warning btn-sm" onclick="editCustomer(${customer.customerId})">Edit</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteCustomer(${customer.customerId})">Delete</button>
+                </td>
+              </tr>
+            `);
+        });
+      }
+    });
+  }
+
+  function saveCustomer() {
+    var formData = {
+      userId: $("#userId").val(),
+      address: $("#address").val(),
+      vehicleName: $("#vehicleName").val(),
+      numberPlate: $("#numberPlate").val()
+    };
+
+    $.ajax({
+      url: "http://localhost:8080/api/v1/customer/save",
+      type: "POST",
+      headers: {
+        "Authorization" : "Bearer " + token
+      },
+      contentType: "application/json",
+      data: JSON.stringify(formData),
+      success: function(response) {
+        alert("Customer saved successfully!");
+        loadCustomers();
+      },
+      error: function(error) {
+        console.error("Error saving customer:", error);
+        alert("Error saving customer: " + error.responseText);
+      }
+    });
+  }
+
+  function updateCustomer() {
+    var customerId = $("#customerId").val();
+    if (!customerId) {
+      alert("Please select a customer to update.");
+      return;
+    }
+
+    var formData = {
+      customerId: parseInt(customerId),
+      userId: parseInt($("#userId").val()),
+      address: $("#address").val(),
+      vehicleName: $("#vehicleName").val(),
+      numberPlate: $("#numberPlate").val()
+    };
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: "http://localhost:8080/api/v1/customer/update",
+          type: "PUT",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          contentType: "application/json",
+          data: JSON.stringify(formData),
+          success: function(response) {
+            if (response.includes("Failed")) {
+              Swal.fire("Customer update failed", "Please try again.", "error");
+            } else {
+              Swal.fire("Updated!", "Customer updated successfully.", "success");
+              loadCustomers();
+              clearForm();
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error("Error updating customer:", xhr.responseText);
+            Swal.fire("Error!", xhr.responseJSON?.message || error, "error");
+          }
+        });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+
+  }
+
+
+  function editCustomer(id) {
+    $.ajax({
+      url: `http://localhost:8080/api/v1/customer/getById/${id}`,
+      type: "GET",
+      headers: {
+        "Authorization": "Bearer " + token
+      },
+      success: function(customer) {
+        if (!customer) {
+          alert("Customer data not found.");
+          return;
+        }
+
+        $("#customerId").val(customer.customerId);
+        $("#userId").val(customer.userId);
+        $("#address").val(customer.address);
+        $("#vehicleName").val(customer.vehicleName);
+        $("#numberPlate").val(customer.numberPlate);
+      },
+      error: function(xhr, status, error) {
+        console.error("Error fetching customer:", xhr.responseText);
+        alert("Error fetching customer: " + (xhr.responseJSON?.message || error));
+      }
+    });
+  }
+
+  function deleteCustomer(id) {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success",
+        cancelButton: "btn btn-danger"
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `http://localhost:8080/api/v1/customer/delete/${id}`,
+          type: "DELETE",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function() {
+            swalWithBootstrapButtons.fire(
+                    "Deleted!",
+                    "Customer has been deleted successfully.",
+                    "success"
+            );
+            loadCustomers();
+          },
+          error: function(xhr, status, error) {
+            console.error("Error deleting customer:", xhr.responseText);
+            swalWithBootstrapButtons.fire(
+                    "Error!",
+                    xhr.responseJSON?.message || "Failed to delete the customer.",
+                    "error"
+            );
+          }
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire(
+                "Cancelled",
+                "Customer is safe :)",
+                "error"
+        );
+      }
+    });
+  }
+
+
+
+  $("#userName").on("change", function () {
+    let userName = $(this).val();
+    if (userName.trim() !== "") {
+      $.ajax({
+        url: `http://localhost:8080/api/v1/user/getByName/${userName}`,
+        type: "GET",
+        headers: {
+          "Authorization" : "Bearer " + token
+        },
+        success: function (user) {
+          if (user && user.userId) {
+            $("#userId").val(user.userId);
+            $("#userStatus").html(`<span class='text-success'>User found: ID ${user.userId}</span>`);
+          } else {
+            $("#userId").val("");
+            $("#userStatus").html("<span class='text-danger'>User not found</span>");
+          }
+        },
+        error: function () {
+          $("#userId").val("");
+          $("#userStatus").html("<span class='text-danger'>User not found</span>");
+        }
+      });
+    }
+  });
+
+
+
+</script>
+
+</body>
+</html>
+
+

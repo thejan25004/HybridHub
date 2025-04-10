@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technician Management</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <script src="sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="sweetalert2.min.css">
+  <style>
+    .btn-secondary { background-color: #6c757d; border: none; }
+    .btn-secondary:hover { background-color: #5a6268; }
+    .back-to-dashboard {
+      display: flex; align-items: center;
+      color: #4CAF50; text-decoration: none;
+      font-size: 16px; padding: 10px; border-radius: 4px;
+      background-color: #f1f1f1; border: 1px solid #ddd;
+    }
+    .back-to-dashboard:hover { background-color: #e7f7e5; color: #388e3c; }
+    img.photo-preview { width: 50px; height: auto; }
+  </style>
+</head>
+<body class="container mt-4">
+<a href="Admin.html" class="back-to-dashboard">
+  <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+<h2 class="mb-4">Technician Management</h2>
+
+<form id="technicianForm" enctype="multipart/form-data">
+  <input type="hidden" id="technicianId">
+  <div class="mb-3">
+    <label for="name" class="form-label">Technician Name:</label>
+    <input type="text" id="name" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="expertise" class="form-label">Expertise:</label>
+    <input type="text" id="expertise" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label for="photo" class="form-label">Photo:</label>
+    <input type="file" id="photo" class="form-control" accept="image/*">
+  </div>
+  <div class="mb-3">
+    <label for="facebook" class="form-label">Facebook:</label>
+    <input type="url" id="facebook" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label for="instagram" class="form-label">Instagram:</label>
+    <input type="url" id="instagram" class="form-control">
+  </div>
+  <div class="mb-3">
+    <label for="twitter" class="form-label">Twitter:</label>
+    <input type="url" id="twitter" class="form-control">
+  </div>
+  <button type="button" class="btn btn-success" onclick="saveTechnician()">Save</button>
+  <button type="button" class="btn btn-primary" onclick="updateTechnician()">Update</button>
+  <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+</form>
+
+<hr>
+
+<table class="table table-bordered mt-4">
+  <thead class="table-dark">
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Expertise</th>
+    <th>Photo</th>
+    <th>Facebook</th>
+    <th>Instagram</th>
+    <th>Twitter</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody id="technicianTableBody"></tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+
+  let token = localStorage.getItem("authToken");
+
+  function clearForm() {
+    $("#technicianForm")[0].reset();
+    $("#technicianId").val("");
+  }
+
+  $(document).ready(function () {
+    loadTechnicians();
+  });
+
+  function loadTechnicians() {
+    $.ajax({
+      url: "http://localhost:8080/api/v1/technician/getAll",
+      type: "GET",
+      headers : {
+        "Authorization" : "Bearer " + token
+      },
+      success: function (technicians) {
+        let tableBody = $("#technicianTableBody");
+        tableBody.empty();
+        technicians.forEach(technician => {
+          tableBody.append(`
+            <tr>
+              <td>${technician.technicianId}</td>
+              <td>${technician.name}</td>
+              <td>${technician.expertise}</td>
+              <td><img src="${technician.photoUrl}" class="photo-preview"></td>
+              <td><a href="${technician.facebookLink}" target="_blank">Facebook</a></td>
+              <td><a href="${technician.instagramLink}" target="_blank">Instagram</a></td>
+              <td><a href="${technician.twitterLink}" target="_blank">Twitter</a></td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="editTechnician(${technician.technicianId})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteTechnician(${technician.technicianId})">Delete</button>
+              </td>
+            </tr>
+          `);
+        });
+      }
+    });
+  }
+
+  function saveTechnician() {
+    var formData = new FormData();
+    formData.append("technician", JSON.stringify({
+      name: $("#name").val(),
+      expertise: $("#expertise").val(),
+      facebookLink: $("#facebook").val(),
+      instagramLink: $("#instagram").val(),
+      twitterLink: $("#twitter").val()
+    }));
+    formData.append("photo", $("#photo")[0].files[0]);
+
+    $.ajax({
+      url: "http://localhost:8080/api/v1/technician/save",  // Ensure this is correct
+      type: "POST",
+      headers: {
+        "Authorization": "Bearer " + token
+      },
+      data: formData,
+      processData: false,  // Don't process the data
+      contentType: false,  // Don't set content type
+      success: function () {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Technician saved successfully!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        clearForm();
+        loadTechnicians();
+      },
+      error: function (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error saving technician",
+          text: error.responseText || "An unexpected error occurred",
+        });
+      }
+    });
+  }
+
+
+
+  function updateTechnician() {
+    var technicianId = $("#technicianId").val();
+    if (!technicianId) {
+      Swal.fire({
+        icon: "warning",
+        title: "No technician selected",
+        text: "Please select a technician to update.",
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: "Do you want to save the changes?",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Save",
+      denyButtonText: `Don't save`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var formData = new FormData();
+        formData.append("technician", JSON.stringify({
+          technicianId: technicianId,
+          name: $("#name").val(),
+          expertise: $("#expertise").val(),
+          facebookLink: $("#facebook").val(),
+          instagramLink: $("#instagram").val(),
+          twitterLink: $("#twitter").val()
+        }));
+        formData.append("photo", $("#photo")[0].files[0]);
+
+        $.ajax({
+          url: `http://localhost:8080/api/v1/technician/update`,
+          type: "PUT",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function () {
+            Swal.fire("Saved!", "Technician updated successfully.", "success");
+            clearForm();
+            loadTechnicians();  // Refresh the list after update
+          },
+          error: function (error) {
+            console.error("Error:", error);
+            Swal.fire("Error updating technician", error.responseText, "error");
+          }
+        });
+      } else if (result.isDenied) {
+        Swal.fire("Changes are not saved", "", "info");
+      }
+    });
+  }
+
+
+
+
+  function editTechnician(id) {
+    $.ajax({
+      url: `http://localhost:8080/api/v1/technician/get/${id}`,
+      type: "GET",
+      headers : {
+        "Authorization" : "Bearer " + token
+      },
+
+      success: function (technician) {
+        $("#technicianId").val(technician.technicianId);
+        $("#name").val(technician.name);
+        $("#expertise").val(technician.expertise);
+        $("#facebook").val(technician.facebookLink);
+        $("#instagram").val(technician.instagramLink);
+        $("#twitter").val(technician.twitterLink);
+      }
+    });
+  }
+
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-success",
+      cancelButton: "btn btn-danger"
+    },
+    buttonsStyling: false
+  });
+
+  function deleteTechnician(id) {
+    swalWithBootstrapButtons.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `http://localhost:8080/api/v1/technician/delete/${id}`,
+          type: "DELETE",
+          headers: {
+            "Authorization": "Bearer " + token
+          },
+          success: function () {
+            swalWithBootstrapButtons.fire({
+              title: "Deleted!",
+              text: "Technician has been deleted.",
+              icon: "success"
+            });
+            loadTechnicians(); // Refresh the list after deletion
+          },
+          error: function (error) {
+            console.error("Error:", error);
+            swalWithBootstrapButtons.fire({
+              title: "Error!",
+              text: "There was an issue deleting the technician.",
+              icon: "error"
+            });
+          }
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "Cancelled",
+          text: "Your technician is safe :)",
+          icon: "error"
+        });
+      }
+    });
+  }
+
+</script>
+
+</body>
+</html>
+

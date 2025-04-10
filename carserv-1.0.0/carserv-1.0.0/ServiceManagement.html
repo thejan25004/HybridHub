@@ -1,0 +1,554 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Service Management</title>-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+<!--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">-->
+<!--    <style>-->
+<!--        .btn-update { background-color: #ffc107; color: white; }-->
+<!--        .btn-update:hover { background-color: #e0a800; }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body class="container mt-4">-->
+<!--<form id="serviceForm">-->
+<!--    &lt;!&ndash; Hidden input for service ID &ndash;&gt;-->
+<!--    <input type="hidden" id="serviceId">-->
+
+<!--    <div class="mb-3">-->
+<!--        <label for="serviceName" class="form-label">Service Name:</label>-->
+<!--        <input type="text" id="serviceName" class="form-control" required>-->
+<!--    </div>-->
+<!--    <div class="mb-3">-->
+<!--        <label for="description" class="form-label">Description:</label>-->
+<!--        <input type="text" id="description" class="form-control" required>-->
+<!--    </div>-->
+<!--    <div class="mb-3">-->
+<!--        <label for="price" class="form-label">Price:</label>-->
+<!--        <input type="number" id="price" class="form-control" required>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Different buttons for save and update &ndash;&gt;-->
+<!--    <button type="button" id="saveButton" class="btn btn-success" onclick="saveService()">Save Service</button>-->
+<!--    <button type="button" id="updateButton" class="btn btn-update" onclick="updateService()" style="display:none;">Update Service</button>-->
+<!--    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>-->
+<!--</form>-->
+
+<!--<hr>-->
+
+<!--<table class="table table-bordered mt-4">-->
+<!--    <thead class="table-dark">-->
+<!--    <tr>-->
+<!--        <th>ID</th>-->
+<!--        <th>Name</th>-->
+<!--        <th>Description</th>-->
+<!--        <th>Price</th>-->
+<!--        <th>Actions</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody id="serviceTableBody"></tbody>-->
+<!--</table>-->
+
+<!--<script>-->
+
+<!--    let token = localStorage.getItem("authToken");-->
+
+<!--    // Function to clear form fields-->
+<!--    function clearForm() {-->
+<!--        $("#serviceForm")[0].reset();-->
+<!--        $("#serviceId").val('');-->
+<!--        $("#saveButton").show();-->
+<!--        $("#updateButton").hide();-->
+<!--    }-->
+
+<!--    // Function to save service using AJAX-->
+<!--    function saveService() {-->
+<!--        const serviceData = {-->
+<!--            serviceName: $("#serviceName").val(),-->
+<!--            description: $("#description").val(),-->
+<!--            price: $("#price").val()-->
+<!--        };-->
+
+<!--        $.ajax({-->
+<!--            url: "http://localhost:8080/api/v1/service/save",-->
+<!--            type: "POST",-->
+<!--            headers : {-->
+<!--                "Authorization" : "Bearer " + token-->
+<!--            },-->
+<!--            contentType: "application/json",-->
+<!--            data: JSON.stringify(serviceData),-->
+<!--            success: function(response) {-->
+<!--                alert("Service saved successfully!");-->
+<!--                loadServices();-->
+<!--                clearForm();-->
+<!--            },-->
+<!--            error: function(error) {-->
+<!--                console.error("Error:", error);-->
+<!--                alert("Error saving service: " + error.responseText);-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Function to load all services-->
+<!--    function loadServices() {-->
+<!--        $.ajax({-->
+<!--            url: "http://localhost:8080/api/v1/service/getAll",-->
+<!--            type: "GET",-->
+<!--            headers : {-->
+<!--                "Authorization" : "Bearer " + token-->
+<!--            },-->
+<!--            success: function(services) {-->
+<!--                let tableBody = $("#serviceTableBody");-->
+<!--                tableBody.empty();-->
+<!--                services.forEach(service => {-->
+<!--                    tableBody.append(`-->
+<!--                        <tr>-->
+<!--                            <td>${service.serviceId}</td>-->
+<!--                            <td>${service.serviceName}</td>-->
+<!--                            <td>${service.description}</td>-->
+<!--                            <td>${service.price}</td>-->
+<!--                            <td>-->
+<!--                                <button class="btn btn-warning btn-sm" onclick="prepareEditService(${service.serviceId})">Edit</button>-->
+<!--                                <button class="btn btn-danger btn-sm" onclick="deleteService(${service.serviceId})">Delete</button>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                    `);-->
+<!--                });-->
+<!--            },-->
+<!--            error: function(error) {-->
+<!--                console.error("Error loading services:", error);-->
+<!--                alert("Failed to load services");-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Prepare service for editing-->
+<!--    function prepareEditService(id) {-->
+<!--        $.ajax({-->
+<!--            url: `http://localhost:8080/api/v1/service/get/${id}`,-->
+<!--            type: "GET",-->
+<!--            headers : {-->
+<!--                "Authorization" : "Bearer " + token-->
+<!--            },-->
+<!--            success: function(service) {-->
+<!--                // Populate form with service details-->
+<!--                $("#serviceId").val(service.serviceId);-->
+<!--                $("#serviceName").val(service.serviceName);-->
+<!--                $("#description").val(service.description);-->
+<!--                $("#price").val(service.price);-->
+
+<!--                // Switch buttons-->
+<!--                $("#saveButton").hide();-->
+<!--                $("#updateButton").show();-->
+<!--            },-->
+<!--            error: function(error) {-->
+<!--                console.error("Error fetching service:", error);-->
+<!--                alert("Failed to fetch service details");-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Function to update service-->
+<!--    function updateService() {-->
+<!--        const serviceData = {-->
+<!--            serviceId: $("#serviceId").val(),-->
+<!--            serviceName: $("#serviceName").val(),-->
+<!--            description: $("#description").val(),-->
+<!--            price: $("#price").val()-->
+<!--        };-->
+
+<!--        $.ajax({-->
+<!--            url: "http://localhost:8080/api/v1/service/update",-->
+<!--            type: "PUT",-->
+<!--            headers : {-->
+<!--                "Authorization" : "Bearer " + token-->
+<!--            },-->
+<!--            contentType: "application/json",-->
+<!--            data: JSON.stringify(serviceData),-->
+<!--            success: function(response) {-->
+<!--                alert("Service updated successfully!");-->
+<!--                loadServices();-->
+<!--                clearForm();-->
+<!--            },-->
+<!--            error: function(error) {-->
+<!--                console.error("Error updating service:", error);-->
+<!--                alert("Failed to update service: " + error.responseText);-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Function to delete a service-->
+<!--    function deleteService(id) {-->
+<!--        if (confirm("Are you sure you want to delete this service?")) {-->
+<!--            $.ajax({-->
+<!--                url: `http://localhost:8080/api/v1/service/delete/${id}`,-->
+<!--                type: "DELETE",-->
+<!--                headers : {-->
+<!--                    "Authorization" : "Bearer " + token-->
+<!--                },-->
+<!--                success: function() {-->
+<!--                    alert("Service deleted successfully!");-->
+<!--                    loadServices();-->
+<!--                },-->
+<!--                error: function(error) {-->
+<!--                    console.error("Error deleting service:", error);-->
+<!--                    alert("Failed to delete service");-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Load services when page is ready-->
+<!--    $(document).ready(function() {-->
+<!--        loadServices();-->
+<!--    });-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <style>
+        .btn-update { background-color: #ffc107; color: white; }
+        .btn-update:hover { background-color: #e0a800; }
+        .service-image { width: 100px; height: 100px; object-fit: cover; }
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body class="container mt-4">
+<form id="serviceForm" enctype="multipart/form-data">
+    <!-- Hidden input for service ID -->
+    <input type="hidden" id="serviceId">
+    <input type="hidden" id="photoUrl">
+
+    <div class="mb-3">
+        <label for="serviceName" class="form-label">Service Name:</label>
+        <input type="text" id="serviceName" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description:</label>
+        <input type="text" id="description" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="price" class="form-label">Price:</label>
+        <input type="number" id="price" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="photo" class="form-label">Service Photo:</label>
+        <input type="file" id="photo" name="photo" class="form-control" accept="image/*">
+        <div class="image-preview mt-2" id="imagePreview">
+            <i class="fas fa-image text-muted" style="font-size: 3em;"></i>
+        </div>
+    </div>
+
+    <!-- Different buttons for save and update -->
+    <button type="button" id="saveButton" class="btn btn-success" onclick="saveService()">Save Service</button>
+    <button type="button" id="updateButton" class="btn btn-update" onclick="updateService()" style="display:none;">Update Service</button>
+    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+</form>
+
+<hr>
+
+<table class="table table-bordered mt-4">
+    <thead class="table-dark">
+    <tr>
+        <th>ID</th>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="serviceTableBody"></tbody>
+</table>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let token = localStorage.getItem("authToken");
+    let baseUrl = "http://localhost:8080";
+
+    // Function to clear form fields
+    function clearForm() {
+        $("#serviceForm")[0].reset();
+        $("#serviceId").val('');
+        $("#photoUrl").val('');
+        $("#saveButton").show();
+        $("#updateButton").hide();
+        $("#imagePreview").html('<i class="fas fa-image text-muted" style="font-size: 3em;"></i>');
+    }
+
+    // Preview image when selected
+    $("#photo").change(function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                $("#imagePreview").html(`<img src="${event.target.result}" alt="Preview">`);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Function to save service with photo
+    function saveService() {
+        const serviceData = {
+            serviceName: $("#serviceName").val(),
+            description: $("#description").val(),
+            price: $("#price").val(),
+            photoUrl: $("#photoUrl").val(),
+        };
+
+        const formData = new FormData();
+        formData.append("service", JSON.stringify(serviceData));
+
+        const fileInput = $("#photo")[0];
+        if (fileInput.files.length > 0) {
+            formData.append("photo", fileInput.files[0]);
+        }
+
+        $.ajax({
+            url: baseUrl + "/api/v1/service/save",
+            type: "POST",
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Service saved successfully",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+
+                loadServices();
+                clearForm();
+            },
+            error: function (error) {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error saving service",
+                    text: error.responseText || "Something went wrong!",
+                });
+            },
+        });
+    }
+
+
+    // Function to update service
+    function updateService() {
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const serviceData = {
+                    serviceId: $("#serviceId").val(),
+                    serviceName: $("#serviceName").val(),
+                    description: $("#description").val(),
+                    price: $("#price").val(),
+                    photoUrl: $("#photoUrl").val(),
+                };
+
+                const formData = new FormData();
+                formData.append("service", JSON.stringify(serviceData));
+
+                const fileInput = $("#photo")[0];
+                if (fileInput.files.length > 0) {
+                    formData.append("photo", fileInput.files[0]);
+                }
+
+                $.ajax({
+                    url: baseUrl + "/api/v1/service/update",
+                    type: "PUT", // Changed from POST to PUT to match controller
+                    headers: {
+                        Authorization: "Bearer " + token,
+                    },
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        Swal.fire("Saved!", "", "success");
+                        loadServices();
+                        clearForm();
+                    },
+                    error: function (error) {
+                        console.error("Error:", error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error updating service",
+                            text: error.responseText || "Something went wrong!",
+                        });
+                    },
+                });
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
+    }
+
+    // Function to load all services
+    function loadServices() {
+        $.ajax({
+            url: baseUrl + "/api/v1/service/getAll",
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(services) {
+                let tableBody = $("#serviceTableBody");
+                tableBody.empty();
+                services.forEach(service => {
+                    const imageCell = service.photoUrl
+                        ? `<img src="${baseUrl + service.photoUrl}" class="service-image" alt="${service.serviceName}">`
+                        : `<i class="fas fa-image text-muted"></i>`;
+
+                    tableBody.append(`
+                        <tr>
+                            <td>${service.serviceId}</td>
+                            <td>${imageCell}</td>
+                            <td>${service.serviceName}</td>
+                            <td>${service.description}</td>
+                            <td>${service.price}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="prepareEditService(${service.serviceId})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteService(${service.serviceId})">Delete</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            },
+            error: function(error) {
+                console.error("Error loading services:", error);
+                alert("Failed to load services");
+            }
+        });
+    }
+
+    // Prepare service for editing
+    function prepareEditService(id) {
+        $.ajax({
+            url: baseUrl + `/api/v1/service/get/${id}`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(service) {
+                // Populate form with service details
+                $("#serviceId").val(service.serviceId);
+                $("#serviceName").val(service.serviceName);
+                $("#description").val(service.description);
+                $("#price").val(service.price);
+                $("#photoUrl").val(service.photoUrl);
+
+                // Display existing image if available
+                if (service.photoUrl) {
+                    $("#imagePreview").html(`<img src="${baseUrl + service.photoUrl}" alt="Preview">`);
+                } else {
+                    $("#imagePreview").html('<i class="fas fa-image text-muted" style="font-size: 3em;"></i>');
+                }
+
+                // Switch buttons
+                $("#saveButton").hide();
+                $("#updateButton").show();
+            },
+            error: function(error) {
+                console.error("Error fetching service:", error);
+                alert("Failed to fetch service details");
+            }
+        });
+    }
+
+    // Function to delete a service
+    function deleteService(id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: false
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: baseUrl + `/api/v1/service/delete/${id}`,
+                    type: "DELETE",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function() {
+                        swalWithBootstrapButtons.fire({
+                            title: "Deleted!",
+                            text: "The service has been deleted.",
+                            icon: "success"
+                        });
+                        loadServices(); // Refresh service list
+                    },
+                    error: function(error) {
+                        console.error("Error deleting service:", error);
+                        swalWithBootstrapButtons.fire({
+                            title: "Error!",
+                            text: "Failed to delete the service.",
+                            icon: "error"
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "The service is safe :)",
+                    icon: "error"
+                });
+            }
+        });
+    }
+
+
+    // Load services when page is ready
+    $(document).ready(function() {
+        loadServices();
+    });
+</script>
+</body>
+</html>

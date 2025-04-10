@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <style>
+        .dashboard-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .status-pending {
+            background-color: #FFF3CD;
+            color: #856404;
+        }
+        .status-completed {
+            background-color: #D4EDDA;
+            color: #155724;
+        }
+        .status-failed {
+            background-color: #F8D7DA;
+            color: #721C24;
+        }
+        .method-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .method-credit {
+            background-color: #CCE5FF;
+            color: #004085;
+        }
+        .method-cash {
+            background-color: #E2E3E5;
+            color: #383d41;
+        }
+        .method-online {
+            background-color: #D1ECF1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-4">💵 Payment Management</h2>
+
+    <!-- Payment Stats Dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-primary text-white mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Revenue</h6>
+                            <h3 class="card-text" id="totalRevenue">$0.00</h3>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-success text-white mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Completed Payments</h6>
+                            <h3 class="card-text" id="completedPayments">0</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card dashboard-card bg-warning text-white mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Pending Payments</h6>
+                            <h3 class="card-text" id="pendingPayments">0</h3>
+                        </div>
+                        <i class="fas fa-clock fa-3x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Monthly Revenue</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Payment Methods</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="paymentMethodsChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Search Section -->
+    <div class="card shadow p-4 mb-4">
+        <h4 class="text-primary">🔍 Payment Search</h4>
+        <div class="row align-items-end mb-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="searchType">Search By</label>
+                    <select id="searchType" class="form-control">
+                        <option value="payment">Payment ID</option>
+                        <option value="booking">Booking ID</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="searchId">ID Number</label>
+                    <input type="number" id="searchId" class="form-control" placeholder="Enter ID">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary btn-block" onclick="searchPayment()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Details Card -->
+    <div id="paymentDetailsCard" class="card shadow mb-4" style="display: none;">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Payment Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="mb-3">💰 Payment Information</h6>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th width="40%">Payment ID</th>
+                            <td id="detailPaymentId"></td>
+                        </tr>
+                        <tr>
+                            <th>Payment Date</th>
+                            <td id="detailPaymentDate"></td>
+                        </tr>
+                        <tr>
+                            <th>Amount</th>
+                            <td id="detailAmount"></td>
+                        </tr>
+                        <tr>
+                            <th>Payment Method</th>
+                            <td id="detailPaymentMethod"></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td id="detailStatus"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="mb-3">📅 Booking Information</h6>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th width="40%">Booking ID</th>
+                            <td id="detailBookingId"></td>
+                        </tr>
+                        <tr>
+                            <th>Customer</th>
+                            <td id="detailCustomerName"></td>
+                        </tr>
+                        <tr>
+                            <th>Service</th>
+                            <td id="detailServiceName"></td>
+                        </tr>
+                        <tr>
+                            <th>Booking Date</th>
+                            <td id="detailBookingDate"></td>
+                        </tr>
+                        <tr>
+                            <th>Technician</th>
+                            <td id="detailTechnicianName"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Status Update Section -->
+            <div class="mt-3 p-3 bg-light rounded">
+                <h6>Update Payment Status</h6>
+                <div class="d-flex">
+                    <select id="updateStatus" class="form-control mr-2">
+                        <option value="PENDING">Pending</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="FAILED">Failed</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="updatePaymentStatus()">
+                        <i class="fas fa-save"></i> Update Status
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Payment Form -->
+    <div class="card shadow p-4 mb-4">
+        <h4 class="text-primary">💳 Create New Payment</h4>
+        <form id="newPaymentForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="bookingId">Booking ID</label>
+                        <input type="number" id="bookingId" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="amount">Amount ($)</label>
+                        <input type="number" id="amount" class="form-control" step="0.01" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="paymentMethod">Payment Method</label>
+                        <select id="paymentMethod" class="form-control" required>
+                            <option value="CREDIT_CARD">Credit Card</option>
+                            <option value="CASH">Cash</option>
+                            <option value="ONLINE">Online</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="paymentStatus">Payment Status</label>
+                        <select id="paymentStatus" class="form-control" required>
+                            <option value="PENDING">Pending</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="FAILED">Failed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right mt-3">
+                <button type="button" class="btn btn-lg btn-primary" onclick="createPayment()">
+                    <i class="fas fa-plus-circle"></i> Create Payment
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- All Payments Table -->
+    <div class="card shadow p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-primary mb-0">📋 All Payments</h4>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" onclick="loadAllPayments()">All</button>
+                <button class="btn btn-outline-warning" onclick="loadPendingPayments()">Pending</button>
+                <button class="btn btn-outline-success" onclick="loadRecentPayments()">Recent</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="paymentsTable">
+                <!-- Payment rows will be inserted dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let token = localStorage.getItem("authToken");
+    let revenueChart, paymentMethodsChart;
+
+    // On page load
+    window.onload = function() {
+        loadAllPayments();
+        loadDashboardStats();
+        initializeCharts();
+    };
+
+    // Initialize charts
+    function initializeCharts() {
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Monthly Revenue ($)',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Payment Methods Chart
+        const methodsCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+        paymentMethodsChart = new Chart(methodsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(255, 206, 86, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+
+        // Load chart data
+        loadChartData();
+    }
+
+    // Load all payments
+    function loadAllPayments() {
+        // For development/demo purposes, if no token is available, use mock data
+        if (!token) {
+            renderMockPayments();
+            return;
+        }
+
+        fetch('/api/v1/payment/all', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderPaymentsTable(data);
+            })
+            .catch(error => {
+                console.error('Error loading payments:', error);
+                // Fallback to mock data if API fails
+                renderMockPayments();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Using demo data',
+                    text: 'Connected to demo mode since backend API is unavailable'
+                });
+            });
+    }
+
+    // Load pending payments
+    function loadPendingPayments() {
+        if (!token) {
+            renderMockPayments('PENDING');
+            return;
+        }
+
+        fetch('/api/v1/payment/pending', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                renderPaymentsTable(data);
+            })
+            .catch(error => {
+                console.error('Error loading pending payments:', error);
+                renderMockPayments('PENDING');
+            });
+    }
+
+    // Load recent payments (last 7 days)
+    function loadRecentPayments() {
+        if (!token) {
+            renderMockPayments('RECENT');
+            return;
+        }
+
+        fetch('/api/v1/payment/recent', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                renderPaymentsTable(data);
+            })
+            .catch(error => {
+                console.error('Error loading recent payments:', error);
+                renderMockPayments('RECENT');
+            });
+    }
+
+    // Render payments table
+    function renderPaymentsTable(payments) {
+        const tableBody = document.getElementById('paymentsTable');
+        tableBody.innerHTML = '';
+
+        if (payments.length === 0) {
+            tableBody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center py-4">No payments found</td>
+            </tr>
+        `;
+            return;
+        }
+
+        payments.forEach(payment => {
+            const row = document.createElement('tr');
+
+            // Format date
+            const paymentDate = new Date(payment.paymentDate);
+            const formattedDate = paymentDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            // Format amount
+            const formattedAmount = parseFloat(payment.amount).toFixed(2);
+
+            // Determine status badge class
+            let statusClass = '';
+            switch (payment.paymentStatus) {
+                case 'Pending':
+                    statusClass = 'status-pending';
+                    break;
+                case 'Completed':
+                    statusClass = 'status-completed';
+                    break;
+                case 'Failed':
+                    statusClass = 'status-failed';
+                    break;
+            }
+
+            // Determine method badge class
+            let methodClass = '';
+            switch (payment.paymentMethod) {
+                case 'Credit Card':
+                    methodClass = 'method-credit';
+                    break;
+                case 'Cash':
+                    methodClass = 'method-cash';
+                    break;
+                case 'Online':
+                    methodClass = 'method-online';
+                    break;
+            }
+
+            row.innerHTML = `
+            <td>#${payment.paymentId}</td>
+            <td>${formattedDate}</td>
+            <td>${payment.customerName || 'N/A'}</td>
+            <td>${payment.serviceName || 'N/A'}</td>
+            <td>$${formattedAmount}</td>
+            <td><span class="method-badge ${methodClass}">${payment.paymentMethod}</span></td>
+            <td><span class="status-badge ${statusClass}">${payment.paymentStatus}</span></td>
+            <td>
+                <button class="btn btn-sm btn-info" onclick="viewPaymentDetails(${payment.paymentId})">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Load dashboard stats
+    function loadDashboardStats() {
+        // Load total revenue
+        fetch('/api/v1/payment/statistics/total-revenue', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalRevenue').textContent = `$${parseFloat(data).toFixed(2)}`;
+            })
+            .catch(error => {
+                console.error('Error loading total revenue:', error);
+            });
+
+        // Count completed payments
+        fetch('/api/v1/payment/all', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const completed = data.filter(payment => payment.paymentStatus === 'Completed').length;
+                document.getElementById('completedPayments').textContent = completed;
+            })
+            .catch(error => {
+                console.error('Error counting completed payments:', error);
+            });
+
+        // Load pending payments count
+        fetch('/api/v1/payment/pending', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('pendingPayments').textContent = data.length;
+            })
+            .catch(error => {
+                console.error('Error loading pending payments count:', error);
+            });
+    }
+
+    // Load chart data
+    function loadChartData() {
+        // Load monthly revenue data
+        fetch('/api/v1/payment/statistics/monthly-revenue', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const months = Object.keys(data);
+                const revenues = Object.values(data);
+
+                // Update revenue chart
+                revenueChart.data.labels = months;
+                revenueChart.data.datasets[0].data = revenues;
+                revenueChart.update();
+            })
+            .catch(error => {
+                console.error('Error loading monthly revenue data:', error);
+            });
+
+        // Load payment methods data
+        fetch('/api/v1/payment/statistics/payment-methods', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const methods = Object.keys(data);
+                const counts = Object.values(data);
+
+                // Update payment methods chart
+                paymentMethodsChart.data.labels = methods;
+                paymentMethodsChart.data.datasets[0].data = counts;
+                paymentMethodsChart.update();
+            })
+            .catch(error => {
+                console.error('Error loading payment methods data:', error);
+            });
+    }
+
+    // Search payment
+    function searchPayment() {
+        const searchType = document.getElementById('searchType').value;
+        const searchId = document.getElementById('searchId').value;
+
+        if (!searchId) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'ID Required',
+                text: 'Please enter an ID to search'
+            });
+            return;
+        }
+
+        let endpoint;
+        if (searchType === 'payment') {
+            endpoint = `/api/v1/payment/details/${searchId}`;
+        } else {
+            endpoint = `/api/v1/payment/booking/${searchId}`;
+        }
+
+        fetch(endpoint, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Payment not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (searchType === 'payment') {
+                    displayPaymentDetails(data);
+                } else {
+                    // If searching by booking ID, we may get multiple payments
+                    if (data.length === 0) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'No Payments Found',
+                            text: `No payments found for booking #${searchId}`
+                        });
+                    } else if (data.length === 1) {
+                        // If only one payment, fetch its details
+                        return fetch(`/api/v1/payment/details/${data[0].paymentId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        }).then(resp => resp.json());
+                    } else {
+                        // If multiple payments, render them in the table
+                        renderPaymentsTable(data);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payments Found',
+                            text: `Found ${data.length} payments for booking #${searchId}`
+                        });
+                    }
+                }
+            })
+            .then(details => {
+                if (details) {
+                    displayPaymentDetails(details);
+                }
+            })
+            .catch(error => {
+                console.error('Error searching payment:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Not Found',
+                    text: 'Please check the ID and try again'
+                });
+            });
+    }
+
+    // Display payment details
+    function displayPaymentDetails(details) {
+        // Show the details card
+        document.getElementById('paymentDetailsCard').style.display = 'block';
+
+        // Payment information
+        document.getElementById('detailPaymentId').textContent = details.payment.paymentId;
+        document.getElementById('detailPaymentDate').textContent = new Date(details.payment.paymentDate).toLocaleString();
+        document.getElementById('detailAmount').textContent = `$${parseFloat(details.payment.amount).toFixed(2)}`;
+        document.getElementById('detailPaymentMethod').textContent = details.payment.paymentMethod;
+        document.getElementById('detailStatus').textContent = details.payment.paymentStatus;
+
+        // Booking information
+        document.getElementById('detailBookingId').textContent = details.booking.bookingId;
+        document.getElementById('detailCustomerName').textContent = details.customer.user.name;
+        document.getElementById('detailServiceName').textContent = details.service.serviceName;
+        document.getElementById('detailBookingDate').textContent = new Date(details.booking.bookingDate).toLocaleString();
+        document.getElementById('detailTechnicianName').textContent = details.technician.user.name;
+
+        // Set the current status in the dropdown
+        document.getElementById('updateStatus').value = details.payment.paymentStatus.replace(' ', '_').toUpperCase();
+
+        // Scroll to the details card
+        document.getElementById('paymentDetailsCard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // View payment details
+    function viewPaymentDetails(paymentId) {
+        fetch(`/api/v1/payment/details/${paymentId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Payment details not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayPaymentDetails(data);
+            })
+            .catch(error => {
+                console.error('Error loading payment details:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to load payment details',
+                    text: 'Please try again later'
+                });
+            });
+    }
+
+    // Update payment status
+    function updatePaymentStatus() {
+        const paymentId = document.getElementById('detailPaymentId').textContent;
+        const newStatus = document.getElementById('updateStatus').value;
+
+        fetch(`/api/v1/payment/update-status/${paymentId}?status=${newStatus}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.text())
+            .then(message => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Status Updated',
+                    text: message
+                });
+
+                // Refresh payment details
+                viewPaymentDetails(paymentId);
+
+                // Refresh stats and table
+                loadDashboardStats();
+                loadAllPayments();
+                loadChartData();
+            })
+            .catch(error => {
+                console.error('Error updating payment status:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to update status',
+                    text: 'Please try again later'
+                });
+            });
+    }
+
+    // Create new payment
+    function createPayment() {
+        const bookingId = document.getElementById('bookingId').value;
+        const amount = document.getElementById('amount').value;
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        const paymentStatus = document.getElementById('paymentStatus').value;
+
+        if (!bookingId || !amount) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Required Fields Missing',
+                text: 'Please fill in all required fields'
+            });
+            return;
+        }
+
+        const paymentData = {
+            bookingId: parseInt(bookingId),
+            amount: parseFloat(amount),
+            paymentMethod: paymentMethod,
+            paymentStatus: paymentStatus
+        };
+
+        fetch('/api/v1/payment/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(paymentData)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to create payment');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Created',
+                    text: `Payment #${data.paymentId} created successfully`
+                });
+
+                // Clear form
+                document.getElementById('bookingId').value = '';
+                document.getElementById('amount').value = '';
+
+                // Refresh data
+                loadAllPayments();
+                loadDashboardStats();
+                loadChartData();
+
+                // Show payment details
+                viewPaymentDetails(data.paymentId);
+            })
+            .catch(error => {
+                console.error('Error creating payment:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed to Create Payment',
+                    text: 'Please check the booking ID and try again'
+                });
+            });
+    }
+</script>
+</body>
+</html>
+

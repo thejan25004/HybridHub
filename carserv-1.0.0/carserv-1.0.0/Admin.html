@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seoul Car Services - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <link rel="stylesheet" href="css/stylenew.css">
+
+    <style>
+        .analytics-charts-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 15px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 15px auto;
+        }
+
+        .booking-chart-container,
+        .customer-chart-container {
+            flex: 1;
+            width: 50%;
+        }
+
+        .booking-chart-card,
+        .customer-chart-card {
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .booking-chart-card:hover,
+        .customer-chart-card:hover {
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .booking-chart-header,
+        .customer-chart-header {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .booking-chart-body,
+        .customer-chart-body {
+            padding: 15px;
+            height: calc(100% - 50px);
+        }
+
+        #bookingChart,
+        #customerChart {
+            max-height: 300px;
+            width: 100%;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .analytics-charts-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .booking-chart-container,
+            .customer-chart-container {
+                width: 100%;
+            }
+        }
+
+        /* Optional: Add some subtle animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .booking-chart-card,
+        .customer-chart-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+ <div class="wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3>SEOUL CAR SERVICES</h3>
+        </div>
+
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="#" class="active">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="bookingManage.html">
+                        <i class="fas fa-calendar-alt"></i> Bookings
+                    </a>
+                </li>
+                <li>
+                    <a href="bookingHistory.html">
+                        <i class="fas fa-car"></i> Booking History
+                    </a>
+                </li>
+                <li>
+                    <a href="customerManage.html">
+                        <i class="fas fa-users"></i> Customers
+                    </a>
+                </li>
+                <li>
+                    <a href="ServiceManagement.html">
+                        <i class="fas fa-tools"></i> Services
+                    </a>
+                </li>
+                <li>
+                    <a href="TechnicianManagement.html">
+                        <i class="fas fa-user-tie"></i> Technician
+                    </a>
+                </li>
+                <li>
+                    <a href="serviceHistory.html">
+                        <i class="fas fa-chart-line"></i> Service History
+                    </a>
+                </li>
+                <li>
+                    <a href="userManage.html">
+                        <i class="fas fa-cog"></i> Users
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="content">
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <button type="button" id="sidebarCollapse" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <div class="ms-auto d-flex align-items-center">
+                    <div class="dropdown me-3">
+                        <a href="#" class="nav-link dropdown-toggle" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+
+                                </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                            <li><a class="dropdown-item" href="#">New Booking request</a></li>
+<!--                            <li><a class="dropdown-item" href="#">Service completed</a></li>-->
+<!--                            <li><a class="dropdown-item" href="#">Customer feedback received</a></li>-->
+                        </ul>
+                    </div>
+
+                    <div class="user-profile dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="/api/placeholder/40/40" alt="Admin">
+                            <span>Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i> Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="login.html"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Overview -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">Dashboard Overview</h2>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card">
+                    <div class="card-icon bg-primary-light">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="card-title">Total Bookings</div>
+                    <div class="card-value booking-count">0</div> <!-- Changed class -->
+                    <div class="card-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 12.5% from last month
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card">
+                    <div class="card-icon bg-success-light">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="card-title">Vehicles Serviced</div>
+                    <div class="card-value">38</div>
+                    <div class="card-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 8.3% from last month
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card">
+                    <div class="card-icon bg-warning-light">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-title">New Customers</div>
+                    <div class="card-value customer-count">0</div> <!-- Changed class -->
+                    <div class="card-trend trend-down">
+                        <i class="fas fa-arrow-down"></i> 3.2% from last month
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="dashboard-card">
+                    <div class="card-icon bg-info-light">
+                        <i class="fas fa-won-sign"></i>
+                    </div>
+                    <div class="card-title">Revenue</div>
+                    <div class="card-value">₩16.8M</div>
+                    <div class="card-trend trend-up">
+                        <i class="fas fa-arrow-up"></i> 15.7% from last month
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        Analytics Charts Start -->
+        <div class="analytics-charts-container">
+            <div class="booking-chart-container">
+                <div class="card booking-chart-card">
+                    <div class="booking-chart-header">
+                        Booking Analytics
+                    </div>
+                    <div class="booking-chart-body">
+                        <canvas id="bookingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="customer-chart-container">
+                <div class="card customer-chart-card">
+                    <div class="customer-chart-header">
+                        Customer Analytics
+                    </div>
+                    <div class="customer-chart-body">
+                        <canvas id="customerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        Analytics Charts End -->
+
+
+        <!-- Recent Appointments -->
+        <div class="row">
+            <div class="col-12">
+                <div class="recent-table">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="chart-title mb-0">Recent Appointments</h3>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Technician</th>
+                                <th>Service Type</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Mobile</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="bookingsTable">
+                            <!-- Dynamic content will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+
+
+    // BokkingNotification Start
+
+    async function fetchNewBookings() {
+        const token = localStorage.getItem("authToken");
+
+        try {
+
+            const response = await fetch("http://localhost:8080/api/v1/booking/new-bookings", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token,
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch new bookings");
+            }
+
+            const newBookings = await response.json();
+            updateNotificationBadge(newBookings.length);
+            updateNotificationDropdown(newBookings);
+
+        } catch (error) {
+            console.error("Error fetching new bookings:", error);
+        }
+    }
+
+    // Function to update the notification badge with the count of new bookings
+    function updateNotificationBadge(count) {
+        const badge = document.querySelector("#notificationDropdown .badge");
+        badge.textContent = count;
+        badge.style.display = count > 0 ? "inline" : "none";
+    }
+
+    // Function to update the notification dropdown with the new bookings
+    function updateNotificationDropdown(bookings) {
+        const dropdown = document.querySelector(".dropdown-menu");
+        dropdown.innerHTML = bookings.map(b =>
+            `<li><a class="dropdown-item" href="bookingManage.html">New booking from ${b.customerId}</a></li>`
+        ).join('');
+    }
+
+    setInterval(fetchNewBookings, 3000);
+
+
+    // BokkingNotification End
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let token = localStorage.getItem("authToken"); // Retrieve token from localStorage
+
+        if (!token) {
+            console.error("No authentication token found! Redirecting to login...");
+            window.location.href = "/login.html"; // Redirect to login page
+            return;
+        }
+
+        // Fetch total bookings count
+        fetch("http://localhost:8080/api/v1/booking/total-bookings", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.querySelector(".booking-count").textContent = data; // Use a unique class
+            })
+            .catch(error => console.error("Error fetching booking count:", error));
+
+        // Fetch total customer count
+        fetch("http://localhost:8080/api/v1/customer/getTotalCount", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.querySelector(".customer-count").textContent = data; // Use a unique class
+            })
+            .catch(error => console.error("Error fetching customer count:", error));
+    });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let token = localStorage.getItem("authToken");
+
+        // Verify token exists
+        if (!token) {
+            console.error('No authentication token found');
+            alert('Please log in to view booking analytics');
+            return;
+        }
+
+        // Fetch booking data from backend with JWT
+        fetch('http://localhost:8080/api/v1/booking/monthly-stats', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                // Check if response is successful
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const ctx = document.getElementById('bookingChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data),
+                        datasets: [{
+                            label: 'Bookings per Month',
+                            data: Object.values(data),
+                            backgroundColor: [
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Monthly Booking Analytics'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Bookings'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching booking data:', error);
+                alert('Failed to load booking analytics. Please try again or contact support.');
+            });
+    });
+
+
+
+    // customer bar Graph
+    document.addEventListener('DOMContentLoaded', function() {
+        let token = localStorage.getItem("authToken");
+
+        // Verify token exists
+        if (!token) {
+            console.error('No authentication token found');
+            alert('Please log in to view customer analytics');
+            return;
+        }
+
+        // Fetch customer data from backend with JWT
+        fetch('http://localhost:8080/api/v1/customer/analytics', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                // Check if response is successful
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const ctx = document.getElementById('customerChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data),
+                        datasets: [{
+                            label: 'Customers by Vehicle Type',
+                            data: Object.values(data),
+                            backgroundColor: [
+                                'rgba(75, 192, 192, 0.6)',
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Customer Vehicle Type Distribution'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Customers'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching customer data:', error);
+                alert('Failed to load customer analytics. Please try again or contact support.');
+            });
+    });
+
+
+
+    let token = localStorage.getItem("authToken");
+
+    function fetchAllBookings() {
+        fetch("http://localhost:8080/api/v1/booking/getAll", {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById("bookingsTable");
+                tableBody.innerHTML = "";
+
+                data.forEach(booking => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                    <td>#APT-${booking.bookingId}</td>
+                    <td>${booking.customerId}</td>
+                    <td>${booking.technicianId || "N/A"}</td>
+                    <td><span class="service-type">${booking.serviceId}</span></td>
+                    <td>${booking.bookingDate}</td>
+                    <td>${booking.bookingTime}</td>
+                    <td>${booking.mobileNumber}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">View Details</a></li>
+                                <li><a class="dropdown-item" href="bookingManage.html">Edit</a></li>
+                                <li><a class="dropdown-item" href="bookingManage.html">Delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                `;
+
+                    row.addEventListener("click", () => populateForm(booking));
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error("Error fetching bookings:", error));
+    }
+
+    fetchAllBookings(); // Fetch data on page load
+</script>
+</body>
+</html>

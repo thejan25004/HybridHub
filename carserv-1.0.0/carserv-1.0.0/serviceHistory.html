@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service History</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .service-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+        .card {
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .analytics-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .booking-item {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: background-color 0.3s;
+        }
+        .booking-item:hover {
+            background-color: #f1f9ff;
+        }
+    </style>
+</head>
+<body class="container mt-4">
+<h1 class="mb-4">Service History</h1>
+
+<!-- Service Selection -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="input-group">
+            <select class="form-select" id="serviceSelect">
+                <option value="" selected>Select a service...</option>
+            </select>
+            <button class="btn btn-primary" id="loadHistoryBtn">
+                Load History
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Service Details Card -->
+<div class="row mb-4" id="serviceDetails" style="display: none;">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <img id="serviceImage" class="img-fluid rounded" alt="Service Image">
+                    </div>
+                    <div class="col-md-9">
+                        <h3 id="serviceName"></h3>
+                        <p id="serviceDescription" class="text-muted"></p>
+                        <p><strong>Price:</strong> $<span id="servicePrice"></span></p>
+                        <div class="badge bg-primary">
+                            <i class="fas fa-calendar-check"></i>
+                            <span id="totalBookings"></span> Bookings
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Section -->
+<div class="row mb-4" id="analyticsSection" style="display: none;">
+    <div class="col-md-6">
+        <div class="analytics-card">
+            <h4>Booking Trend</h4>
+            <canvas id="bookingChart"></canvas>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="analytics-card">
+            <h4>Customer Distribution</h4>
+            <canvas id="customerChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Bookings Table -->
+<div class="row" id="bookingsSection" style="display: none;">
+    <div class="col-md-12">
+        <h3>Booking History</h3>
+        <div id="bookingsList"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let token = localStorage.getItem("authToken");
+    let baseUrl = "http://localhost:8080";
+    let bookingsData = [];
+    let bookingChart = null;
+    let customerChart = null;
+
+    // Load all services when page loads
+    $(document).ready(function() {
+        loadAllServices();
+
+        $("#loadHistoryBtn").click(function() {
+            const serviceId = $("#serviceSelect").val();
+            if (serviceId) {
+                loadServiceHistory(serviceId);
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Please select a service",
+                    text: "You need to select a service to view its history."
+                });
+            }
+        });
+    });
+
+    // Function to load all services into the dropdown
+    function loadAllServices() {
+        $.ajax({
+            url: baseUrl + "/api/v1/service/getAll",
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(services) {
+                const select = $("#serviceSelect");
+                select.find("option:not(:first)").remove();
+
+                services.forEach(service => {
+                    select.append(`<option value="${service.serviceId}">${service.serviceName}</option>`);
+                });
+            },
+            error: function(error) {
+                console.error("Error loading services:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to load services. Please try again."
+                });
+            }
+        });
+    }
+
+    // Function to load service history
+    function loadServiceHistory(serviceId) {
+        $.ajax({
+            url: baseUrl + `/api/v1/service/history/${serviceId}`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(history) {
+                displayServiceDetails(history.service);
+                displayBookings(history.bookings);
+                displayAnalytics(history.bookings, history.bookingsByCustomer);
+
+                $("#serviceDetails").show();
+                $("#analyticsSection").show();
+                $("#bookingsSection").show();
+            },
+            error: function(error) {
+                console.error("Error loading service history:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to load service history. Please try again."
+                });
+            }
+        });
+    }
+
+    // Function to display service details
+    function displayServiceDetails(service) {
+        $("#serviceName").text(service.serviceName);
+        $("#serviceDescription").text(service.description);
+        $("#servicePrice").text(service.price);
+        $("#serviceImage").attr("src", baseUrl + service.photoUrl);
+    }
+
+    // Function to display bookings
+    function displayBookings(bookings) {
+        bookingsData = bookings;
+        const bookingsList = $("#bookingsList");
+        bookingsList.empty();
+
+        if (bookings.length === 0) {
+            bookingsList.append(`
+                    <div class="alert alert-info">
+                        No bookings found for this service.
+                    </div>
+                `);
+            return;
+        }
+
+        $("#totalBookings").text(bookings.length);
+
+        bookings.forEach(booking => {
+            const bookingDate = new Date(booking.bookingDate);
+            const formattedDate = bookingDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // Fetch customer details
+            fetchCustomerDetails(booking.customerId, function(customer) {
+                bookingsList.append(`
+                        <div class="booking-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Booking Date:</strong> ${formattedDate}<br>
+                                    <strong>Booking Time:</strong> ${booking.bookingTime || 'N/A'}
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Customer:</strong> ${customer ? customer.user.username : 'Loading...'}<br>
+                                    <strong>Vehicle:</strong> ${customer ? customer.vehicleName : 'Loading...'}
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Number Plate:</strong> ${customer ? customer.numberPlate : 'Loading...'}<br>
+                                    <strong>Mobile:</strong> ${booking.mobileNumber || 'N/A'}
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <button class="btn btn-sm btn-info" onclick="viewBookingDetails(${booking.bookingId})">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+            });
+        });
+    }
+
+    // Function to fetch customer details
+    function fetchCustomerDetails(customerId, callback) {
+        $.ajax({
+            url: baseUrl + `/api/v1/customer/getById/${customerId}`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(customer) {
+                // Fetch user details to get username
+                $.ajax({
+                    url: baseUrl + `/api/v1/user/get/${customer.userId}`,
+                    type: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    },
+                    success: function(user) {
+                        customer.user = user;
+                        callback(customer);
+                    },
+                    error: function() {
+                        callback(customer);
+                    }
+                });
+            },
+            error: function() {
+                callback(null);
+            }
+        });
+    }
+
+    // Function to view booking details
+    function viewBookingDetails(bookingId) {
+        $.ajax({
+            url: baseUrl + `/api/v1/booking/details/${bookingId}`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(details) {
+                Swal.fire({
+                    title: 'Booking Details',
+                    html: `
+                            <div class="text-start">
+                                <h5>Customer Information</h5>
+                                <p>
+                                    <strong>Name:</strong> ${details.customer ? details.customer.name : 'N/A'}<br>
+                                    <strong>Vehicle:</strong> ${details.customer ? details.customer.vehicleName : 'N/A'}<br>
+                                    <strong>Number Plate:</strong> ${details.customer ? details.customer.numberPlate : 'N/A'}<br>
+                                    <strong>Address:</strong> ${details.customer ? details.customer.address : 'N/A'}
+                                </p>
+
+                                <h5>Booking Information</h5>
+                                <p>
+                                    <strong>Date:</strong> ${new Date(details.booking.bookingDate).toLocaleDateString()}<br>
+                                    <strong>Time:</strong> ${details.booking.bookingTime || 'N/A'}<br>
+                                    <strong>Service:</strong> ${details.service ? details.service.serviceName : 'N/A'}<br>
+                                    <strong>Price:</strong> $${details.service ? details.service.price : 'N/A'}
+                                </p>
+
+                                <h5>Technician Information</h5>
+                                <p>
+                                    <strong>Technician:</strong> ${details.technician ? details.technician.name : 'Not Assigned'}<br>
+                                    ${details.technician ? `<strong>Specialization:</strong> ${details.technician.specialization || 'N/A'}` : ''}
+                                </p>
+                            </div>
+                        `,
+                    width: '600px'
+                });
+            },
+            error: function(error) {
+                console.error("Error fetching booking details:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to load booking details."
+                });
+            }
+        });
+    }
+
+    // Function to display analytics
+    function displayAnalytics(bookings, bookingsByCustomer) {
+        // Prepare data for booking trend chart
+        const bookingsByMonth = {};
+
+        bookings.forEach(booking => {
+            const date = new Date(booking.bookingDate);
+            const month = date.toLocaleString('default', { month: 'long' });
+
+            if (!bookingsByMonth[month]) {
+                bookingsByMonth[month] = 0;
+            }
+            bookingsByMonth[month]++;
+        });
+
+        // Create booking trend chart
+        const bookingCtx = document.getElementById('bookingChart').getContext('2d');
+
+        if (bookingChart) {
+            bookingChart.destroy();
+        }
+
+        bookingChart = new Chart(bookingCtx, {
+            type: 'line',
+            data: {
+                labels: Object.keys(bookingsByMonth),
+                datasets: [{
+                    label: 'Number of Bookings',
+                    data: Object.values(bookingsByMonth),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        precision: 0
+                    }
+                }
+            }
+        });
+
+        // Create customer distribution chart
+        const customerCtx = document.getElementById('customerChart').getContext('2d');
+
+        if (customerChart) {
+            customerChart.destroy();
+        }
+
+        // Get total unique customers
+        const uniqueCustomers = Object.keys(bookingsByCustomer).length;
+
+        // Prepare data for pie chart
+        const customerData = [];
+        const customerLabels = [];
+
+        Object.entries(bookingsByCustomer).forEach(([customerId, count], index) => {
+            customerData.push(count);
+
+            // For labels, we will use Customer 1, Customer 2, etc.
+            // In a real app you could fetch the customer names
+            customerLabels.push(`Customer ${index + 1}`);
+        });
+
+        customerChart = new Chart(customerCtx, {
+            type: 'pie',
+            data: {
+                labels: customerLabels,
+                datasets: [{
+                    data: customerData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)',
+                        'rgba(199, 199, 199, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    title: {
+                        display: true,
+                        text: `Total unique customers: ${uniqueCustomers}`
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

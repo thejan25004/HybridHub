@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seoul Car Services - Sign Up</title>
+
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            display: flex;
+            width: 900px;
+            height: 600px;
+            margin: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .image-section {
+            width: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .form-section {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            background-color: #f7f7f7;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .input-group i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 15px;
+            color: #777;
+        }
+
+        .btn-signup {
+            width: 100%;
+            padding: 12px;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-signup:hover {
+            background-color: #d40000;
+        }
+
+        .separator {
+            margin: 20px 0;
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .social-icon.google { color: #DB4437; }
+        .social-icon.facebook { color: #4267B2; }
+        .social-icon.instagram { color: #E1306C; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="image-section">
+        <img src="img/2191163.jpg" alt="Red sports car">
+        <div class="overlay"></div>
+    </div>
+    <div class="form-section">
+        <div class="form-container">
+            <h1>Sign Up</h1>
+            <form id="signup-form">
+                <div class="input-group">
+                    <input type="text" id="name" placeholder="Enter Your Fullname">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Enter Your Email">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <button type="submit" class="btn-signup" id="register-button">SIGN UP</button>
+            </form>
+            <div class="separator">Or Sign up with Social Platforms</div>
+            <div class="social-login">
+                <div class="social-icon google">
+                    <i class="fab fa-google"></i>
+                </div>
+                <div class="social-icon facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="social-icon instagram">
+                    <i class="fab fa-instagram"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+        $("#signup-form").submit(function (event) {
+            event.preventDefault(); // Prevent normal form submission
+
+            let user = {
+                name: $("#name").val(),
+                email: $("#email").val(),
+                password: $("#password").val(),
+                role: "USER"
+            };
+
+            $.ajax({
+                url: "http://localhost:8080/api/v1/signUp/register",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(user),
+                success: function (response) {
+                    if (response.message === "Success") {
+                        localStorage.setItem("authToken", response.data.token);
+
+                        // Show success toast notification
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: "top-end",
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.onmouseenter = Swal.stopTimer;
+                                toast.onmouseleave = Swal.resumeTimer;
+                            }
+                        });
+
+                        Toast.fire({
+                            icon: "success",
+                            title: "Signed up successfully"
+                        });
+
+                        setTimeout(() => {
+                            window.location.href = "index.html"; // Redirect after toast
+                        }, 2000);
+                    } else {
+                        Swal.fire("Error", response.data, "error");
+                    }
+                },
+                error: function (error) {
+                    Swal.fire("An error occurred", error.responseJSON?.message || "Failed to register", "error");
+                }
+            });
+        });
+    });
+
+
+</script>
+
+</body>
+</html>

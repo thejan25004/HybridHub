@@ -1,0 +1,1590 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Chat Messenger</title>-->
+<!--    <style>-->
+<!--        :root {-->
+<!--            &#45;&#45;primary-color: #e21b1b;-->
+<!--            &#45;&#45;secondary-color: #f5f5f5;-->
+<!--            &#45;&#45;text-color: #000000;-->
+<!--            &#45;&#45;light-text: #666666;-->
+<!--            &#45;&#45;sent-bg: #e21b1b;-->
+<!--            &#45;&#45;sent-text: #ffffff;-->
+<!--            &#45;&#45;received-bg: #f5f5f5;-->
+<!--            &#45;&#45;received-text: #000000;-->
+<!--            &#45;&#45;admin-bg: #000000;-->
+<!--            &#45;&#45;admin-text: #ffffff;-->
+<!--            &#45;&#45;border-color: #cccccc;-->
+<!--        }-->
+
+<!--        * {-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            box-sizing: border-box;-->
+<!--            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;-->
+<!--        }-->
+
+<!--        body {-->
+<!--            background-color: #ffffff;-->
+<!--            color: var(&#45;&#45;text-color);-->
+<!--        }-->
+
+<!--        .container {-->
+<!--            display: flex;-->
+<!--            max-width: 1200px;-->
+<!--            height: 100vh;-->
+<!--            margin: 0 auto;-->
+<!--            background: white;-->
+<!--            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);-->
+<!--        }-->
+
+<!--        /* Sidebar Styles */-->
+<!--        .sidebar {-->
+<!--            width: 300px;-->
+<!--            border-right: 1px solid var(&#45;&#45;border-color);-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            background-color: #f8f8f8;-->
+<!--        }-->
+
+<!--        .user-profile {-->
+<!--            padding: 15px;-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--        }-->
+
+<!--        .user-avatar {-->
+<!--            width: 40px;-->
+<!--            height: 40px;-->
+<!--            border-radius: 50%;-->
+<!--            background: white;-->
+<!--            color: var(&#45;&#45;primary-color);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            font-weight: bold;-->
+<!--            margin-right: 10px;-->
+<!--        }-->
+
+<!--        .user-status {-->
+<!--            font-size: 0.8rem;-->
+<!--            opacity: 0.8;-->
+<!--        }-->
+
+<!--        .search-box {-->
+<!--            padding: 10px;-->
+<!--            border-bottom: 1px solid var(&#45;&#45;border-color);-->
+<!--        }-->
+
+<!--        .search-box input {-->
+<!--            width: 100%;-->
+<!--            padding: 8px;-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            border-radius: 20px;-->
+<!--            outline: none;-->
+<!--        }-->
+
+<!--        .chat-list {-->
+<!--            flex: 1;-->
+<!--            overflow-y: auto;-->
+<!--        }-->
+
+<!--        .chat-item {-->
+<!--            padding: 15px;-->
+<!--            border-bottom: 1px solid var(&#45;&#45;border-color);-->
+<!--            cursor: pointer;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            transition: background 0.3s;-->
+<!--        }-->
+
+<!--        .chat-item:hover {-->
+<!--            background: #ececec;-->
+<!--        }-->
+
+<!--        .chat-item.active {-->
+<!--            background: #ececec;-->
+<!--            border-left: 3px solid var(&#45;&#45;primary-color);-->
+<!--        }-->
+
+<!--        .chat-avatar {-->
+<!--            width: 40px;-->
+<!--            height: 40px;-->
+<!--            border-radius: 50%;-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            font-weight: bold;-->
+<!--            margin-right: 10px;-->
+<!--        }-->
+
+<!--        .chat-info {-->
+<!--            flex: 1;-->
+<!--        }-->
+
+<!--        .chat-name {-->
+<!--            font-weight: bold;-->
+<!--        }-->
+
+<!--        .chat-message {-->
+<!--            font-size: 0.8rem;-->
+<!--            color: var(&#45;&#45;light-text);-->
+<!--            white-space: nowrap;-->
+<!--            overflow: hidden;-->
+<!--            text-overflow: ellipsis;-->
+<!--            max-width: 150px;-->
+<!--        }-->
+
+<!--        .chat-meta {-->
+<!--            text-align: right;-->
+<!--            font-size: 0.75rem;-->
+<!--        }-->
+
+<!--        .chat-time {-->
+<!--            color: var(&#45;&#45;light-text);-->
+<!--        }-->
+
+<!--        .chat-count {-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            border-radius: 50%;-->
+<!--            width: 20px;-->
+<!--            height: 20px;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            margin-top: 5px;-->
+<!--            margin-left: auto;-->
+<!--        }-->
+
+<!--        /* Chat Area Styles */-->
+<!--        .chat-area {-->
+<!--            flex: 1;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--        }-->
+
+<!--        .chat-header {-->
+<!--            padding: 15px;-->
+<!--            border-bottom: 1px solid var(&#45;&#45;border-color);-->
+<!--            background-color: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--        }-->
+
+<!--        .chat-messages {-->
+<!--            flex: 1;-->
+<!--            padding: 20px;-->
+<!--            overflow-y: auto;-->
+<!--            background: #ffffff;-->
+<!--            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f1f1f1' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");-->
+<!--        }-->
+
+<!--        .message {-->
+<!--            max-width: 80%;-->
+<!--            padding: 10px 15px;-->
+<!--            margin-bottom: 10px;-->
+<!--            border-radius: 15px;-->
+<!--            position: relative;-->
+<!--            clear: both;-->
+<!--        }-->
+
+<!--        .message-time {-->
+<!--            font-size: 0.7rem;-->
+<!--            color: rgba(255, 255, 255, 0.7);-->
+<!--            text-align: right;-->
+<!--            margin-top: 5px;-->
+<!--        }-->
+
+<!--        .sent {-->
+<!--            background: var(&#45;&#45;sent-bg);-->
+<!--            color: var(&#45;&#45;sent-text);-->
+<!--            float: right;-->
+<!--            border-bottom-right-radius: 5px;-->
+<!--        }-->
+
+<!--        .sent .message-time {-->
+<!--            color: rgba(255, 255, 255, 0.7);-->
+<!--        }-->
+
+<!--        .received {-->
+<!--            background: var(&#45;&#45;received-bg);-->
+<!--            color: var(&#45;&#45;received-text);-->
+<!--            float: left;-->
+<!--            border-bottom-left-radius: 5px;-->
+<!--            border: 1px solid #e0e0e0;-->
+<!--        }-->
+
+<!--        .received .message-time {-->
+<!--            color: rgba(0, 0, 0, 0.5);-->
+<!--        }-->
+
+<!--        .admin {-->
+<!--            background: var(&#45;&#45;admin-bg);-->
+<!--            color: var(&#45;&#45;admin-text);-->
+<!--        }-->
+
+<!--        .admin .message-time {-->
+<!--            color: rgba(255, 255, 255, 0.7);-->
+<!--        }-->
+
+<!--        .message-sender {-->
+<!--            font-weight: bold;-->
+<!--            font-size: 0.8rem;-->
+<!--            margin-bottom: 5px;-->
+<!--        }-->
+
+<!--        .chat-input {-->
+<!--            padding: 15px;-->
+<!--            border-top: 1px solid var(&#45;&#45;border-color);-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            background-color: #f8f8f8;-->
+<!--        }-->
+
+<!--        .chat-input input {-->
+<!--            flex: 1;-->
+<!--            padding: 10px;-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            border-radius: 20px;-->
+<!--            outline: none;-->
+<!--            margin: 0 10px;-->
+<!--        }-->
+
+<!--        .chat-input button {-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            border-radius: 50%;-->
+<!--            width: 40px;-->
+<!--            height: 40px;-->
+<!--            cursor: pointer;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--        }-->
+
+<!--        .chat-input button:hover {-->
+<!--            background: #c41616;-->
+<!--        }-->
+
+<!--        /* Admin Panel Specific */-->
+<!--        .admin-controls {-->
+<!--            padding: 15px;-->
+<!--            background: #f8f8f8;-->
+<!--            border-bottom: 1px solid var(&#45;&#45;border-color);-->
+<!--        }-->
+
+<!--        .admin-badge {-->
+<!--            background: #000000;-->
+<!--            color: white;-->
+<!--            padding: 3px 8px;-->
+<!--            border-radius: 10px;-->
+<!--            font-size: 0.7rem;-->
+<!--            margin-left: 10px;-->
+<!--        }-->
+
+<!--        .user-info {-->
+<!--            font-size: 0.8rem;-->
+<!--            color: rgba(255, 255, 255, 0.8);-->
+<!--        }-->
+
+<!--        /* User Status */-->
+<!--        .status-indicator {-->
+<!--            width: 10px;-->
+<!--            height: 10px;-->
+<!--            border-radius: 50%;-->
+<!--            display: inline-block;-->
+<!--            margin-right: 5px;-->
+<!--        }-->
+
+<!--        .status-online {-->
+<!--            background: #4CAF50;-->
+<!--        }-->
+
+<!--        .status-offline {-->
+<!--            background: #9E9E9E;-->
+<!--        }-->
+
+<!--        select {-->
+<!--            padding: 8px;-->
+<!--            border-radius: 4px;-->
+<!--            border: 1px solid var(&#45;&#45;border-color);-->
+<!--            width: 100%;-->
+<!--        }-->
+
+<!--        /* Toggle Button */-->
+<!--        .toggle-button {-->
+<!--            position: fixed;-->
+<!--            bottom: 20px;-->
+<!--            right: 20px;-->
+<!--            padding: 10px 15px;-->
+<!--            background: var(&#45;&#45;primary-color);-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            border-radius: 5px;-->
+<!--            cursor: pointer;-->
+<!--            font-weight: bold;-->
+<!--            box-shadow: 0 2px 5px rgba(0,0,0,0.2);-->
+<!--        }-->
+
+<!--        .toggle-button:hover {-->
+<!--            background: #c41616;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container" id="adminPanel">-->
+<!--    &lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--    <div class="sidebar">-->
+<!--        <div class="user-profile">-->
+<!--            <div class="user-avatar">A</div>-->
+<!--            <div class="user-info">-->
+<!--                <div class="user-name">Admin Panel</div>-->
+<!--                <div class="user-status">-->
+<!--                    <span class="status-indicator status-online"></span>Online-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="admin-controls">-->
+<!--            <select id="filterUsers" onchange="filterUserChats()">-->
+<!--                <option value="all">All Users</option>-->
+<!--                <option value="active">Active Conversations</option>-->
+<!--                <option value="new">New Messages</option>-->
+<!--            </select>-->
+<!--        </div>-->
+
+<!--        <div class="search-box">-->
+<!--            <input type="text" placeholder="Search users..." id="searchUsers" onkeyup="searchUserChats()">-->
+<!--        </div>-->
+
+<!--        <div class="chat-list" id="userChatList">-->
+<!--            &lt;!&ndash; User chat items will be dynamically added here &ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Chat Area &ndash;&gt;-->
+<!--    <div class="chat-area">-->
+<!--        <div class="chat-header">-->
+<!--            <div class="chat-avatar" id="currentChatAvatar" style="background: white; color: #e21b1b;">U</div>-->
+<!--            <div class="chat-info">-->
+<!--                <div class="chat-name" id="currentChatName">Select a user</div>-->
+<!--                <div class="user-info" id="currentUserEmail"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="chat-messages" id="chatMessages">-->
+<!--            &lt;!&ndash; Messages will be dynamically added here &ndash;&gt;-->
+<!--            <div class="message received">-->
+<!--                <div class="message-sender">System</div>-->
+<!--                <div>Select a user to start chatting</div>-->
+<!--                <div class="message-time">Now</div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="chat-input">-->
+<!--            <button style="background: #000000;">-->
+<!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--                    <path d="M19 13.5v-3M12 21V3M5 13.5v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--                </svg>-->
+<!--            </button>-->
+<!--            <input type="text" placeholder="Type a message..." id="messageInput">-->
+<!--            <button id="sendButton" onclick="sendMessage()">-->
+<!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--                </svg>-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div class="container" id="userPanel" style="display: none;">-->
+<!--    &lt;!&ndash; User Panel Interface &ndash;&gt;-->
+<!--    <div class="chat-area">-->
+<!--        <div class="chat-header">-->
+<!--            <div class="chat-avatar" style="background: white; color: #e21b1b;">S</div>-->
+<!--            <div class="chat-info">-->
+<!--                <div class="chat-name">Support</div>-->
+<!--                <div class="user-status">-->
+<!--                    <span class="status-indicator status-online"></span>Online-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="chat-messages" id="userChatMessages">-->
+<!--            &lt;!&ndash; Messages will be dynamically added here &ndash;&gt;-->
+<!--            <div class="message received admin">-->
+<!--                <div class="message-sender">Support</div>-->
+<!--                <div>Hello! How can I help you today?</div>-->
+<!--                <div class="message-time">Now</div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="chat-input">-->
+<!--            <input type="text" placeholder="Type a message..." id="userMessageInput">-->
+<!--            <button id="userSendButton" onclick="sendUserMessage()">-->
+<!--                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">-->
+<!--                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>-->
+<!--                </svg>-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<button class="toggle-button" onclick="togglePanel()">Toggle Admin/User View</button>-->
+
+<!--<script>-->
+<!--    // Mock data for demo purposes-->
+<!--    const users = [-->
+<!--        { userId: 1, name: "John Doe", email: "john@example.com", role: "user", unread: 3 },-->
+<!--        { userId: 2, name: "Jane Smith", email: "jane@example.com", role: "user", unread: 0 },-->
+<!--        { userId: 3, name: "Bob Johnson", email: "bob@example.com", role: "user", unread: 1 },-->
+<!--        { userId: 4, name: "Alice Williams", email: "alice@example.com", role: "user", unread: 0 },-->
+<!--        { userId: 5, name: "Admin User", email: "admin@example.com", role: "admin", unread: 0 }-->
+<!--    ];-->
+
+<!--    const conversations = {-->
+<!--        1: [-->
+<!--            { sender: 1, text: "Hello, I need help with my account", time: "10:30 AM" },-->
+<!--            { sender: 5, text: "Hi John, I'd be happy to help. What seems to be the issue?", time: "10:32 AM" },-->
+<!--            { sender: 1, text: "I can't reset my password", time: "10:33 AM" }-->
+<!--        ],-->
+<!--        2: [-->
+<!--            { sender: 2, text: "Is there a way to change my email?", time: "Yesterday" },-->
+<!--            { sender: 5, text: "Yes, Jane. Go to settings and update your profile information.", time: "Yesterday" }-->
+<!--        ],-->
+<!--        3: [-->
+<!--            { sender: 3, text: "The app is not working for me", time: "2 days ago" },-->
+<!--            { sender: 5, text: "I'm sorry to hear that Bob. Could you tell me what error you're seeing?", time: "2 days ago" },-->
+<!--            { sender: 3, text: "It keeps crashing when I try to upload photos", time: "2 days ago" }-->
+<!--        ],-->
+<!--        4: [-->
+<!--            { sender: 4, text: "Just wanted to say your service is great!", time: "3 days ago" },-->
+<!--            { sender: 5, text: "Thank you for your kind words, Alice! Is there anything else we can help you with?", time: "3 days ago" }-->
+<!--        ]-->
+<!--    };-->
+
+<!--    // Current user and selected user-->
+<!--    let currentUser = users.find(u => u.role === "admin"); // Default to admin for demo-->
+<!--    let selectedUser = null;-->
+
+<!--    // Initialize the chat list-->
+<!--    function initializeChatList() {-->
+<!--        const chatList = document.getElementById('userChatList');-->
+<!--        chatList.innerHTML = '';-->
+
+<!--        users.filter(u => u.role === "user").forEach(user => {-->
+<!--            const lastMessage = conversations[user.userId] ?-->
+<!--                conversations[user.userId][conversations[user.userId].length - 1] :-->
+<!--                { text: "No messages yet" };-->
+
+<!--            const chatItem = document.createElement('div');-->
+<!--            chatItem.className = 'chat-item';-->
+<!--            chatItem.setAttribute('data-userid', user.userId);-->
+<!--            chatItem.innerHTML = `-->
+<!--                    <div class="chat-avatar">${user.name.charAt(0)}</div>-->
+<!--                    <div class="chat-info">-->
+<!--                        <div class="chat-name">${user.name}</div>-->
+<!--                        <div class="chat-message">${lastMessage.text}</div>-->
+<!--                    </div>-->
+<!--                    <div class="chat-meta">-->
+<!--                        <div class="chat-time">${lastMessage.time || 'Now'}</div>-->
+<!--                        ${user.unread > 0 ? `<div class="chat-count">${user.unread}</div>` : ''}-->
+<!--                    </div>-->
+<!--                `;-->
+
+<!--            chatItem.addEventListener('click', () => selectUser(user));-->
+<!--            chatList.appendChild(chatItem);-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Select a user to chat with-->
+<!--    function selectUser(user) {-->
+<!--        selectedUser = user;-->
+
+<!--        // Update UI-->
+<!--        document.querySelectorAll('.chat-item').forEach(item => {-->
+<!--            item.classList.remove('active');-->
+<!--            if (parseInt(item.getAttribute('data-userid')) === user.userId) {-->
+<!--                item.classList.add('active');-->
+<!--                // Reset unread count-->
+<!--                const countElement = item.querySelector('.chat-count');-->
+<!--                if (countElement) countElement.remove();-->
+
+<!--                // Update the user object-->
+<!--                const userIndex = users.findIndex(u => u.userId === user.userId);-->
+<!--                if (userIndex > -1) {-->
+<!--                    users[userIndex].unread = 0;-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+
+<!--        // Update chat header-->
+<!--        document.getElementById('currentChatName').textContent = user.name;-->
+<!--        document.getElementById('currentChatAvatar').textContent = user.name.charAt(0);-->
+<!--        document.getElementById('currentUserEmail').textContent = user.email;-->
+
+<!--        // Load conversation-->
+<!--        loadConversation(user.userId);-->
+<!--    }-->
+
+<!--    // Load conversation with selected user-->
+<!--    function loadConversation(userId) {-->
+<!--        const chatMessages = document.getElementById('chatMessages');-->
+<!--        chatMessages.innerHTML = '';-->
+
+<!--        if (conversations[userId]) {-->
+<!--            conversations[userId].forEach(msg => {-->
+<!--                const sender = users.find(u => u.userId === msg.sender);-->
+<!--                const isAdmin = sender.role === 'admin';-->
+
+<!--                const messageDiv = document.createElement('div');-->
+<!--                messageDiv.className = `message ${isAdmin ? 'sent' : 'received'}`;-->
+<!--                messageDiv.innerHTML = `-->
+<!--                        <div class="message-sender">${sender.name}</div>-->
+<!--                        <div>${msg.text}</div>-->
+<!--                        <div class="message-time">${msg.time}</div>-->
+<!--                    `;-->
+
+<!--                chatMessages.appendChild(messageDiv);-->
+<!--            });-->
+<!--        }-->
+
+<!--        // Scroll to bottom-->
+<!--        chatMessages.scrollTop = chatMessages.scrollHeight;-->
+<!--    }-->
+
+<!--    // Send message function-->
+<!--    function sendMessage() {-->
+<!--        if (!selectedUser) {-->
+<!--            alert("Please select a user to chat with");-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const input = document.getElementById('messageInput');-->
+<!--        const message = input.value.trim();-->
+
+<!--        if (message) {-->
+<!--            const now = new Date();-->
+<!--            const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();-->
+
+<!--            // Add to conversations-->
+<!--            if (!conversations[selectedUser.userId]) {-->
+<!--                conversations[selectedUser.userId] = [];-->
+<!--            }-->
+
+<!--            conversations[selectedUser.userId].push({-->
+<!--                sender: currentUser.userId,-->
+<!--                text: message,-->
+<!--                time: time-->
+<!--            });-->
+
+<!--            // Update UI-->
+<!--            const messageDiv = document.createElement('div');-->
+<!--            messageDiv.className = 'message sent';-->
+<!--            messageDiv.innerHTML = `-->
+<!--                    <div class="message-sender">${currentUser.name}</div>-->
+<!--                    <div>${message}</div>-->
+<!--                    <div class="message-time">${time}</div>-->
+<!--                `;-->
+
+<!--            document.getElementById('chatMessages').appendChild(messageDiv);-->
+<!--            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;-->
+
+<!--            // Clear input-->
+<!--            input.value = '';-->
+
+<!--            // Simulate response for demo-->
+<!--            if (Math.random() > 0.5) {-->
+<!--                setTimeout(() => {-->
+<!--                    simulateUserResponse(selectedUser.userId);-->
+<!--                }, 2000);-->
+<!--            }-->
+
+<!--            // Update chat list-->
+<!--            updateChatList();-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Send user message (from user panel)-->
+<!--    function sendUserMessage() {-->
+<!--        const input = document.getElementById('userMessageInput');-->
+<!--        const message = input.value.trim();-->
+
+<!--        if (message) {-->
+<!--            const now = new Date();-->
+<!--            const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();-->
+
+<!--            // Get user (for demo using the first user)-->
+<!--            const user = users.find(u => u.userId === 1);-->
+
+<!--            // Add to conversations-->
+<!--            if (!conversations[user.userId]) {-->
+<!--                conversations[user.userId] = [];-->
+<!--            }-->
+
+<!--            conversations[user.userId].push({-->
+<!--                sender: user.userId,-->
+<!--                text: message,-->
+<!--                time: time-->
+<!--            });-->
+
+<!--            // Update UI-->
+<!--            const messageDiv = document.createElement('div');-->
+<!--            messageDiv.className = 'message sent';-->
+<!--            messageDiv.innerHTML = `-->
+<!--                    <div>${message}</div>-->
+<!--                    <div class="message-time">${time}</div>-->
+<!--                `;-->
+
+<!--            document.getElementById('userChatMessages').appendChild(messageDiv);-->
+<!--            document.getElementById('userChatMessages').scrollTop = document.getElementById('userChatMessages').scrollHeight;-->
+
+<!--            // Clear input-->
+<!--            input.value = '';-->
+
+<!--            // Increment unread count for admin-->
+<!--            const userIndex = users.findIndex(u => u.userId === user.userId);-->
+<!--            if (userIndex > -1) {-->
+<!--                users[userIndex].unread++;-->
+<!--            }-->
+
+<!--            // Update admin chat list-->
+<!--            updateChatList();-->
+
+<!--            // Simulate response for demo-->
+<!--            setTimeout(() => {-->
+<!--                const adminResponse = document.createElement('div');-->
+<!--                adminResponse.className = 'message received admin';-->
+<!--                adminResponse.innerHTML = `-->
+<!--                        <div class="message-sender">Support</div>-->
+<!--                        <div>Thanks for your message. An admin will respond shortly.</div>-->
+<!--                        <div class="message-time">${time}</div>-->
+<!--                    `;-->
+
+<!--                document.getElementById('userChatMessages').appendChild(adminResponse);-->
+<!--                document.getElementById('userChatMessages').scrollTop = document.getElementById('userChatMessages').scrollHeight;-->
+<!--            }, 1500);-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Simulate user response for demo-->
+<!--    function simulateUserResponse(userId) {-->
+<!--        const user = users.find(u => u.userId === userId);-->
+<!--        const responses = [-->
+<!--            "Thanks for the help!",-->
+<!--            "I'll try that solution.",-->
+<!--            "Can you explain a bit more?",-->
+<!--            "Got it, that makes sense."-->
+<!--        ];-->
+
+<!--        const randomResponse = responses[Math.floor(Math.random() * responses.length)];-->
+<!--        const now = new Date();-->
+<!--        const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();-->
+
+<!--        // Add to conversations-->
+<!--        conversations[userId].push({-->
+<!--            sender: userId,-->
+<!--            text: randomResponse,-->
+<!--            time: time-->
+<!--        });-->
+
+<!--        // Update UI if this user is selected-->
+<!--        if (selectedUser && selectedUser.userId === userId) {-->
+<!--            const messageDiv = document.createElement('div');-->
+<!--            messageDiv.className = 'message received';-->
+<!--            messageDiv.innerHTML = `-->
+<!--                    <div class="message-sender">${user.name}</div>-->
+<!--                    <div>${randomResponse}</div>-->
+<!--                    <div class="message-time">${time}</div>-->
+<!--                `;-->
+
+<!--            document.getElementById('chatMessages').appendChild(messageDiv);-->
+<!--            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;-->
+<!--        } else {-->
+<!--            // Increment unread count-->
+<!--            const userIndex = users.findIndex(u => u.userId === userId);-->
+<!--            if (userIndex > -1) {-->
+<!--                users[userIndex].unread++;-->
+<!--            }-->
+<!--        }-->
+
+<!--        // Update chat list-->
+<!--        updateChatList();-->
+<!--    }-->
+
+<!--    // Update chat list-->
+<!--    function updateChatList() {-->
+<!--        initializeChatList();-->
+
+<!--        // Reselect current user if there is one-->
+<!--        if (selectedUser) {-->
+<!--            document.querySelectorAll('.chat-item').forEach(item => {-->
+<!--                if (parseInt(item.getAttribute('data-userid')) === selectedUser.userId) {-->
+<!--                    item.classList.add('active');-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Filter user chats-->
+<!--    function filterUserChats() {-->
+<!--        const filter = document.getElementById('filterUsers').value;-->
+<!--        const chatItems = document.querySelectorAll('.chat-item');-->
+
+<!--        chatItems.forEach(item => {-->
+<!--            const userId = parseInt(item.getAttribute('data-userid'));-->
+<!--            const user = users.find(u => u.userId === userId);-->
+
+<!--            if (!user) return;-->
+
+<!--            if (filter === 'all') {-->
+<!--                item.style.display = '';-->
+<!--            } else if (filter === 'active') {-->
+<!--                const hasConversation = conversations[userId] && conversations[userId].length > 0;-->
+<!--                item.style.display = hasConversation ? '' : 'none';-->
+<!--            } else if (filter === 'new') {-->
+<!--                item.style.display = user.unread > 0 ? '' : 'none';-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Search user chats-->
+<!--    function searchUserChats() {-->
+<!--        const search = document.getElementById('searchUsers').value.toLowerCase();-->
+<!--        const chatItems = document.querySelectorAll('.chat-item');-->
+
+<!--        chatItems.forEach(item => {-->
+<!--            const userId = parseInt(item.getAttribute('data-userid'));-->
+<!--            const user = users.find(u => u.userId === userId);-->
+
+<!--            if (!user) return;-->
+
+<!--            const nameMatch = user.name.toLowerCase().includes(search);-->
+<!--            const emailMatch = user.email.toLowerCase().includes(search);-->
+
+<!--            item.style.display = nameMatch || emailMatch ? '' : 'none';-->
+<!--        });-->
+<!--    }-->
+
+<!--    // Toggle between admin and user panels (for demo)-->
+<!--    function togglePanel() {-->
+<!--        const adminPanel = document.getElementById('adminPanel');-->
+<!--        const userPanel = document.getElementById('userPanel');-->
+
+<!--        if (adminPanel.style.display === 'none') {-->
+<!--            adminPanel.style.display = '';-->
+<!--            userPanel.style.display = 'none';-->
+<!--            currentUser = users.find(u => u.role === "admin");-->
+<!--        } else {-->
+<!--            adminPanel.style.display = 'none';-->
+<!--            userPanel.style.display = '';-->
+<!--            currentUser = users.find(u => u.userId === 1); // First user for demo-->
+<!--        }-->
+<!--    }-->
+
+<!--    // Add keyboard event listeners-->
+<!--    document.getElementById('messageInput').addEventListener('keypress', function(e) {-->
+<!--        if (e.key === 'Enter') {-->
+<!--            sendMessage();-->
+<!--        }-->
+<!--    });-->
+
+<!--    document.getElementById('userMessageInput').addEventListener('keypress', function(e) {-->
+<!--        if (e.key === 'Enter') {-->
+<!--            sendUserMessage();-->
+<!--        }-->
+<!--    });-->
+
+<!--    // Initialize the app-->
+<!--    window.onload = function() {-->
+<!--        initializeChatList();-->
+<!--    };-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Messenger</title>
+    <style>
+        :root {
+            --primary-color: #4a76a8;
+            --secondary-color: #eef2f7;
+            --text-color: #333;
+            --light-text: #777;
+            --sent-bg: #dcf8c6;
+            --received-bg: #f2f2f2;
+            --admin-bg: #e3f2fd;
+            --border-color: #ddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            height: 100vh;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-profile {
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-status {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .search-box {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .chat-item:hover {
+            background: var(--secondary-color);
+        }
+
+        .chat-item.active {
+            background: var(--secondary-color);
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: bold;
+        }
+
+        .chat-message {
+            font-size: 0.8rem;
+            color: var(--light-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .chat-meta {
+            text-align: right;
+            font-size: 0.75rem;
+        }
+
+        .chat-time {
+            color: var(--light-text);
+        }
+
+        .chat-count {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 5px;
+            margin-left: auto;
+        }
+
+        /* Chat Area Styles */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #e5ddd5;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 15px;
+            position: relative;
+            clear: both;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .sent {
+            background: var(--sent-bg);
+            float: right;
+            border-bottom-right-radius: 5px;
+        }
+
+        .received {
+            background: var(--received-bg);
+            float: left;
+            border-bottom-left-radius: 5px;
+        }
+
+        .admin {
+            background: var(--admin-bg);
+        }
+
+        .message-sender {
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+            margin: 0 10px;
+        }
+
+        .chat-input button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-input button:hover {
+            background: #3a5f8a;
+        }
+
+        /* Admin Panel Specific */
+        .admin-controls {
+            padding: 15px;
+            background: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .admin-badge {
+            background: #ff5722;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
+        .user-info {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        /* User Status */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-online {
+            background: #4CAF50;
+        }
+
+        .status-offline {
+            background: #9E9E9E;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="adminPanel">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-profile">
+            <div class="user-avatar">A</div>
+            <div class="user-info">
+                <div class="user-name">Admin Panel</div>
+                <div class="user-status">
+                    <span class="status-indicator status-online"></span>Online
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-controls">
+            <select id="filterUsers" onchange="filterUserChats()">
+                <option value="all">All Users</option>
+                <option value="active">Active Conversations</option>
+                <option value="new">New Messages</option>
+            </select>
+        </div>
+
+        <div class="search-box">
+            <input type="text" placeholder="Search users..." id="searchUsers" onkeyup="searchUserChats()">
+        </div>
+
+        <div class="chat-list" id="userChatList">
+            <!-- User chat items will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+        <div class="chat-header">
+            <div class="chat-avatar" id="currentChatAvatar">U</div>
+            <div class="chat-info">
+                <div class="chat-name" id="currentChatName">Select a user</div>
+                <div class="user-info" id="currentUserEmail"></div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be dynamically added here -->
+            <div class="message received">
+                <div class="message-sender">System</div>
+                <div>Select a user to start chatting</div>
+                <div class="message-time">Now</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <button>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 13.5v-3M12 21V3M5 13.5v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <input type="text" placeholder="Type a message..." id="messageInput">
+            <button id="sendButton" onclick="sendMessage()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="userPanel" style="display: none;">
+    <!-- User Panel Interface -->
+    <div class="chat-area">
+        <div class="chat-header">
+            <div class="chat-avatar">S</div>
+            <div class="chat-info">
+                <div class="chat-name">Support</div>
+                <div class="user-status">
+                    <span class="status-indicator status-online"></span>Online
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="userChatMessages">
+            <!-- Messages will be dynamically added here -->
+            <div class="message received admin">
+                <div class="message-sender">Support</div>
+                <div>Hello! How can I help you today?</div>
+                <div class="message-time">Now</div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" placeholder="Type a message..." id="userMessageInput">
+            <button id="userSendButton" onclick="sendUserMessage()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Mock data for demo purposes
+    const users = [
+        { userId: 1, name: "John Doe", email: "john@example.com", role: "user", unread: 3 },
+        { userId: 2, name: "Jane Smith", email: "jane@example.com", role: "user", unread: 0 },
+        { userId: 3, name: "Bob Johnson", email: "bob@example.com", role: "user", unread: 1 },
+        { userId: 4, name: "Alice Williams", email: "alice@example.com", role: "user", unread: 0 },
+        { userId: 5, name: "Admin User", email: "admin@example.com", role: "admin", unread: 0 }
+    ];
+
+    const conversations = {
+        1: [
+            { sender: 1, text: "Hello, I need help with my account", time: "10:30 AM" },
+            { sender: 5, text: "Hi John, I'd be happy to help. What seems to be the issue?", time: "10:32 AM" },
+            { sender: 1, text: "I can't reset my password", time: "10:33 AM" }
+        ],
+        2: [
+            { sender: 2, text: "Is there a way to change my email?", time: "Yesterday" },
+            { sender: 5, text: "Yes, Jane. Go to settings and update your profile information.", time: "Yesterday" }
+        ],
+        3: [
+            { sender: 3, text: "The app is not working for me", time: "2 days ago" },
+            { sender: 5, text: "I'm sorry to hear that Bob. Could you tell me what error you're seeing?", time: "2 days ago" },
+            { sender: 3, text: "It keeps crashing when I try to upload photos", time: "2 days ago" }
+        ],
+        4: [
+            { sender: 4, text: "Just wanted to say your service is great!", time: "3 days ago" },
+            { sender: 5, text: "Thank you for your kind words, Alice! Is there anything else we can help you with?", time: "3 days ago" }
+        ]
+    };
+
+    // Current user and selected user
+    let currentUser = users.find(u => u.role === "admin"); // Default to admin for demo
+    let selectedUser = null;
+
+    // Initialize the chat list
+    function initializeChatList() {
+        const chatList = document.getElementById('userChatList');
+        chatList.innerHTML = '';
+
+        users.filter(u => u.role === "user").forEach(user => {
+            const lastMessage = conversations[user.userId] ?
+                conversations[user.userId][conversations[user.userId].length - 1] :
+                { text: "No messages yet" };
+
+            const chatItem = document.createElement('div');
+            chatItem.className = 'chat-item';
+            chatItem.setAttribute('data-userid', user.userId);
+            chatItem.innerHTML = `
+                    <div class="chat-avatar">${user.name.charAt(0)}</div>
+                    <div class="chat-info">
+                        <div class="chat-name">${user.name}</div>
+                        <div class="chat-message">${lastMessage.text}</div>
+                    </div>
+                    <div class="chat-meta">
+                        <div class="chat-time">${lastMessage.time || 'Now'}</div>
+                        ${user.unread > 0 ? `<div class="chat-count">${user.unread}</div>` : ''}
+                    </div>
+                `;
+
+            chatItem.addEventListener('click', () => selectUser(user));
+            chatList.appendChild(chatItem);
+        });
+    }
+
+    // Select a user to chat with
+    function selectUser(user) {
+        selectedUser = user;
+
+        // Update UI
+        document.querySelectorAll('.chat-item').forEach(item => {
+            item.classList.remove('active');
+            if (parseInt(item.getAttribute('data-userid')) === user.userId) {
+                item.classList.add('active');
+                // Reset unread count
+                const countElement = item.querySelector('.chat-count');
+                if (countElement) countElement.remove();
+
+                // Update the user object
+                const userIndex = users.findIndex(u => u.userId === user.userId);
+                if (userIndex > -1) {
+                    users[userIndex].unread = 0;
+                }
+            }
+        });
+
+        // Update chat header
+        document.getElementById('currentChatName').textContent = user.name;
+        document.getElementById('currentChatAvatar').textContent = user.name.charAt(0);
+        document.getElementById('currentUserEmail').textContent = user.email;
+
+        // Load conversation
+        loadConversation(user.userId);
+    }
+
+    // Load conversation with selected user
+    function loadConversation(userId) {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+
+        if (conversations[userId]) {
+            conversations[userId].forEach(msg => {
+                const sender = users.find(u => u.userId === msg.sender);
+                const isAdmin = sender.role === 'admin';
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isAdmin ? 'sent' : 'received'}`;
+                messageDiv.innerHTML = `
+                        <div class="message-sender">${sender.name}</div>
+                        <div>${msg.text}</div>
+                        <div class="message-time">${msg.time}</div>
+                    `;
+
+                chatMessages.appendChild(messageDiv);
+            });
+        }
+
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Send message function
+    function sendMessage() {
+        if (!selectedUser) {
+            alert("Please select a user to chat with");
+            return;
+        }
+
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+
+        if (message) {
+            const now = new Date();
+            const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+            // Add to conversations
+            if (!conversations[selectedUser.userId]) {
+                conversations[selectedUser.userId] = [];
+            }
+
+            conversations[selectedUser.userId].push({
+                sender: currentUser.userId,
+                text: message,
+                time: time
+            });
+
+            // Update UI
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            messageDiv.innerHTML = `
+                    <div class="message-sender">${currentUser.name}</div>
+                    <div>${message}</div>
+                    <div class="message-time">${time}</div>
+                `;
+
+            document.getElementById('chatMessages').appendChild(messageDiv);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+
+            // Clear input
+            input.value = '';
+
+            // Simulate response for demo
+            if (Math.random() > 0.5) {
+                setTimeout(() => {
+                    simulateUserResponse(selectedUser.userId);
+                }, 2000);
+            }
+
+            // Update chat list
+            updateChatList();
+        }
+    }
+
+    // Send user message (from user panel)
+    function sendUserMessage() {
+        const input = document.getElementById('userMessageInput');
+        const message = input.value.trim();
+
+        if (message) {
+            const now = new Date();
+            const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+            // Get user (for demo using the first user)
+            const user = users.find(u => u.userId === 1);
+
+            // Add to conversations
+            if (!conversations[user.userId]) {
+                conversations[user.userId] = [];
+            }
+
+            conversations[user.userId].push({
+                sender: user.userId,
+                text: message,
+                time: time
+            });
+
+            // Update UI
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            messageDiv.innerHTML = `
+                    <div>${message}</div>
+                    <div class="message-time">${time}</div>
+                `;
+
+            document.getElementById('userChatMessages').appendChild(messageDiv);
+            document.getElementById('userChatMessages').scrollTop = document.getElementById('userChatMessages').scrollHeight;
+
+            // Clear input
+            input.value = '';
+
+            // Increment unread count for admin
+            const userIndex = users.findIndex(u => u.userId === user.userId);
+            if (userIndex > -1) {
+                users[userIndex].unread++;
+            }
+
+            // Update admin chat list
+            updateChatList();
+
+            // Simulate response for demo
+            setTimeout(() => {
+                const adminResponse = document.createElement('div');
+                adminResponse.className = 'message received admin';
+                adminResponse.innerHTML = `
+                        <div class="message-sender">Support</div>
+                        <div>Thanks for your message. An admin will respond shortly.</div>
+                        <div class="message-time">${time}</div>
+                    `;
+
+                document.getElementById('userChatMessages').appendChild(adminResponse);
+                document.getElementById('userChatMessages').scrollTop = document.getElementById('userChatMessages').scrollHeight;
+            }, 1500);
+        }
+    }
+
+    // Simulate user response for demo
+    function simulateUserResponse(userId) {
+        const user = users.find(u => u.userId === userId);
+        const responses = [
+            "Thanks for the help!",
+            "I'll try that solution.",
+            "Can you explain a bit more?",
+            "Got it, that makes sense."
+        ];
+
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const now = new Date();
+        const time = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+
+        // Add to conversations
+        conversations[userId].push({
+            sender: userId,
+            text: randomResponse,
+            time: time
+        });
+
+        // Update UI if this user is selected
+        if (selectedUser && selectedUser.userId === userId) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message received';
+            messageDiv.innerHTML = `
+                    <div class="message-sender">${user.name}</div>
+                    <div>${randomResponse}</div>
+                    <div class="message-time">${time}</div>
+                `;
+
+            document.getElementById('chatMessages').appendChild(messageDiv);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        } else {
+            // Increment unread count
+            const userIndex = users.findIndex(u => u.userId === userId);
+            if (userIndex > -1) {
+                users[userIndex].unread++;
+            }
+        }
+
+        // Update chat list
+        updateChatList();
+    }
+
+    // Update chat list
+    function updateChatList() {
+        initializeChatList();
+
+        // Reselect current user if there is one
+        if (selectedUser) {
+            document.querySelectorAll('.chat-item').forEach(item => {
+                if (parseInt(item.getAttribute('data-userid')) === selectedUser.userId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    }
+
+    // Filter user chats
+    function filterUserChats() {
+        const filter = document.getElementById('filterUsers').value;
+        const chatItems = document.querySelectorAll('.chat-item');
+
+        chatItems.forEach(item => {
+            const userId = parseInt(item.getAttribute('data-userid'));
+            const user = users.find(u => u.userId === userId);
+
+            if (!user) return;
+
+            if (filter === 'all') {
+                item.style.display = '';
+            } else if (filter === 'active') {
+                const hasConversation = conversations[userId] && conversations[userId].length > 0;
+                item.style.display = hasConversation ? '' : 'none';
+            } else if (filter === 'new') {
+                item.style.display = user.unread > 0 ? '' : 'none';
+            }
+        });
+    }
+
+    // Search user chats
+    function searchUserChats() {
+        const search = document.getElementById('searchUsers').value.toLowerCase();
+        const chatItems = document.querySelectorAll('.chat-item');
+
+        chatItems.forEach(item => {
+            const userId = parseInt(item.getAttribute('data-userid'));
+            const user = users.find(u => u.userId === userId);
+
+            if (!user) return;
+
+            const nameMatch = user.name.toLowerCase().includes(search);
+            const emailMatch = user.email.toLowerCase().includes(search);
+
+            item.style.display = nameMatch || emailMatch ? '' : 'none';
+        });
+    }
+
+    // Toggle between admin and user panels (for demo)
+    function togglePanel() {
+        const adminPanel = document.getElementById('adminPanel');
+        const userPanel = document.getElementById('userPanel');
+
+        if (adminPanel.style.display === 'none') {
+            adminPanel.style.display = '';
+            userPanel.style.display = 'none';
+            currentUser = users.find(u => u.role === "admin");
+        } else {
+            adminPanel.style.display = 'none';
+            userPanel.style.display = '';
+            currentUser = users.find(u => u.userId === 1); // First user for demo
+        }
+    }
+
+    // Add keyboard event listeners
+    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    document.getElementById('userMessageInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendUserMessage();
+        }
+    });
+
+    // Initialize the app
+    window.onload = function() {
+        initializeChatList();
+
+        // Add toggle button for demo
+        const toggleButton = document.createElement('button');
+        toggleButton.textContent = 'Toggle Admin/User View';
+        toggleButton.style.position = 'fixed';
+        toggleButton.style.bottom = '20px';
+        toggleButton.style.right = '20px';
+        toggleButton.style.padding = '10px';
+        toggleButton.style.background = '#4a76a8';
+        toggleButton.style.color = 'white';
+        toggleButton.style.border = 'none';
+        toggleButton.style.borderRadius = '5px';
+        toggleButton.style.cursor = 'pointer';
+        toggleButton.addEventListener('click', togglePanel);
+        document.body.appendChild(toggleButton);
+    };
+</script>
+</body>
+</html>

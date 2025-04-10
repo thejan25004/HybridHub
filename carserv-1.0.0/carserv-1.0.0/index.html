@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>CarServ - Car Repair HTML Template</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&family=Ubuntu:wght@400;500&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <script src="sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .customer-save {
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .customer-info {
+            background: var(--primary);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .customer-form {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .customer-form-header {
+            background: var(--secondary);
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .form-control {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        /*Technician*/
+
+        .technician-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .technician-header h1 {
+            color: #0d2862;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .technician-header h5 {
+            color: #dc3545;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .technician-card {
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+        }
+
+        .technician-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .technician-img {
+            height: 280px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .technician-info {
+            padding: 15px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+
+        .technician-name {
+            color: #0d2862;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .technician-expertise {
+            color: #6c757d;
+        }
+
+        .social-links {
+            margin-top: 10px;
+        }
+
+        .social-links a {
+            margin: 0 8px;
+            color: #6c757d;
+            transition: color 0.3s;
+            font-size: 24px;
+        }
+
+        .social-links a:hover {
+            color: #0d2862;
+        }
+
+
+
+
+        /*Bookings*/
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .booking {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .booking-info {
+            background: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-info::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
+        }
+
+        .booking-info h1 {
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+
+        .booking-form {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-form-header {
+            background: var(--secondary);
+            padding: 20px;
+            color: white;
+        }
+
+        .form-control {
+            border: 1px solid #e1e5ea;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #95a5a6;
+        }
+
+        .btn-book {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            right: 15px;
+            top: 14px;
+            color: #95a5a6;
+        }
+
+        .hidden-field {
+            display: none;
+        }
+
+
+
+
+        /*testimonial*/
+        .testimonial-container {
+            max-width: 2000px;
+            margin-left: 25px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            /*border: 3px solid black; !* Added black border with 3px thickness *!*/
+        }
+
+        .testimonial-form {
+            padding: 40px;
+            background-color: #f8f9fa;
+        }
+        .testimonial-preview {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px;
+            background-color: white;
+        }
+        .testimonial-card {
+            min-width: 300px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .testimonial-card:hover {
+            transform: scale(1.05);
+        }
+        .testimonial-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        .photo-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            border: 3px solid #007bff;
+        }
+        .form-control, .btn {
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+
+    <!-- Topbar Start -->
+    <div class="container-fluid bg-light p-0">
+        <div class="row gx-0 d-none d-lg-flex">
+            <div class="col-lg-7 px-5 text-start">
+                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
+                    <small class="fa fa-map-marker-alt text-primary me-2"></small>
+                    <small>123 Street, New York, USA</small>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center py-3">
+                    <small class="far fa-clock text-primary me-2"></small>
+                    <small>Mon - Fri : 09.00 AM - 09.00 PM</small>
+                </div>
+            </div>
+            <div class="col-lg-5 px-5 text-end">
+                <div class="h-100 d-inline-flex align-items-center py-3 me-4">
+                    <small class="fa fa-phone-alt text-primary me-2"></small>
+                    <small>+012 345 6789</small>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center">
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href=""><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-0" href=""><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h2 class="m-0 text-primary"><i class="fa fa-car me-3"></i>HybridHub</h2>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link active">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="service.html" class="nav-item nav-link">Services</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                    <div class="dropdown-menu fade-up m-0">
+                        <a href="booking.html" class="dropdown-item">Booking</a>
+                        <a href="team.html" class="dropdown-item">Technicians</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                        <a href="userChat.html" class="dropdown-item">404 Page</a>
+                    </div>
+                </div>
+                <a href="UserChat.html" class="nav-item nav-link">Contact</a>
+            </div>
+            <a href="" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Get A Quote<i class="fa fa-arrow-right ms-3"></i></a>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+
+    <!-- Carousel Start -->
+    <div class="container-fluid p-0 mb-5">
+        <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img class="w-100" src="img/carousel-bg-1.jpg" alt="Image">
+                    <div class="carousel-caption d-flex align-items-center">
+                        <div class="container">
+                            <div class="row align-items-center justify-content-center justify-content-lg-start">
+                                <div class="col-10 col-lg-7 text-center text-lg-start">
+                                    <h6 class="text-white text-uppercase mb-3 animated slideInDown">// Car Servicing //</h6>
+                                    <h1 class="display-3 text-white mb-4 pb-3 animated slideInDown">Qualified Car Repair Service Center</h1>
+                                    <a href="" class="btn btn-primary py-3 px-5 animated slideInDown">Learn More<i class="fa fa-arrow-right ms-3"></i></a>
+                                </div>
+                                <div class="col-lg-5 d-none d-lg-flex animated zoomIn">
+                                    <img class="img-fluid" src="img/carousel-1.png" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img class="w-100" src="img/carousel-bg-2.jpg" alt="Image">
+                    <div class="carousel-caption d-flex align-items-center">
+                        <div class="container">
+                            <div class="row align-items-center justify-content-center justify-content-lg-start">
+                                <div class="col-10 col-lg-7 text-center text-lg-start">
+                                    <h6 class="text-white text-uppercase mb-3 animated slideInDown">// Car Servicing //</h6>
+                                    <h1 class="display-3 text-white mb-4 pb-3 animated slideInDown">Qualified Car Wash Service Center</h1>
+                                    <a href="" class="btn btn-primary py-3 px-5 animated slideInDown">Learn More<i class="fa fa-arrow-right ms-3"></i></a>
+                                </div>
+                                <div class="col-lg-5 d-none d-lg-flex animated zoomIn">
+                                    <img class="img-fluid" src="img/carousel-2.png" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#header-carousel"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+    <!-- Carousel End -->
+
+
+    <!-- Service Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="d-flex py-5 px-4">
+                        <i class="fa fa-certificate fa-3x text-primary flex-shrink-0"></i>
+                        <div class="ps-4">
+                            <h5 class="mb-3">Quality Servicing</h5>
+                            <p>Diam dolor diam ipsum sit amet diam et eos erat ipsum</p>
+                            <a class="text-secondary border-bottom" href="">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="d-flex bg-light py-5 px-4">
+                        <i class="fa fa-users-cog fa-3x text-primary flex-shrink-0"></i>
+                        <div class="ps-4">
+                            <h5 class="mb-3">Expert Workers</h5>
+                            <p>Diam dolor diam ipsum sit amet diam et eos erat ipsum</p>
+                            <a class="text-secondary border-bottom" href="">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="d-flex py-5 px-4">
+                        <i class="fa fa-tools fa-3x text-primary flex-shrink-0"></i>
+                        <div class="ps-4">
+                            <h5 class="mb-3">Modern Equipment</h5>
+                            <p>Diam dolor diam ipsum sit amet diam et eos erat ipsum</p>
+                            <a class="text-secondary border-bottom" href="">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Service End -->
+
+
+    <!-- About Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6 pt-4" style="min-height: 400px;">
+                    <div class="position-relative h-100 wow fadeIn" data-wow-delay="0.1s">
+                        <img class="position-absolute img-fluid w-100 h-100" src="img/about.jpg" style="object-fit: cover;" alt="">
+                        <div class="position-absolute top-0 end-0 mt-n4 me-n4 py-4 px-5" style="background: rgba(0, 0, 0, .08);">
+                            <h1 class="display-4 text-white mb-0">15 <span class="fs-4">Years</span></h1>
+                            <h4 class="text-white">Experience</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h6 class="text-primary text-uppercase">// About Us //</h6>
+                    <h1 class="mb-4"><span class="text-primary">CarServ</span> Is The Best Place For Your Auto Care</h1>
+                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
+                    <div class="row g-4 mb-3 pb-3">
+                        <div class="col-12 wow fadeIn" data-wow-delay="0.1s">
+                            <div class="d-flex">
+                                <div class="bg-light d-flex flex-shrink-0 align-items-center justify-content-center mt-1" style="width: 45px; height: 45px;">
+                                    <span class="fw-bold text-secondary">01</span>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>Professional & Expert</h6>
+                                    <span>Diam dolor diam ipsum sit amet diam et eos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 wow fadeIn" data-wow-delay="0.3s">
+                            <div class="d-flex">
+                                <div class="bg-light d-flex flex-shrink-0 align-items-center justify-content-center mt-1" style="width: 45px; height: 45px;">
+                                    <span class="fw-bold text-secondary">02</span>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>Quality Servicing Center</h6>
+                                    <span>Diam dolor diam ipsum sit amet diam et eos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 wow fadeIn" data-wow-delay="0.5s">
+                            <div class="d-flex">
+                                <div class="bg-light d-flex flex-shrink-0 align-items-center justify-content-center mt-1" style="width: 45px; height: 45px;">
+                                    <span class="fw-bold text-secondary">03</span>
+                                </div>
+                                <div class="ps-3">
+                                    <h6>Awards Winning Workers</h6>
+                                    <span>Diam dolor diam ipsum sit amet diam et eos</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="" class="btn btn-primary py-3 px-5">Read More<i class="fa fa-arrow-right ms-3"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
+
+
+    <!-- Fact Start -->
+    <div class="container-fluid fact bg-dark my-5 py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.1s">
+                    <i class="fa fa-check fa-2x text-white mb-3"></i>
+                    <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
+                    <p class="text-white mb-0">Years Experience</p>
+                </div>
+                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.3s">
+                    <i class="fa fa-users-cog fa-2x text-white mb-3"></i>
+                    <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
+                    <p class="text-white mb-0">Expert Technicians</p>
+                </div>
+                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.5s">
+                    <i class="fa fa-users fa-2x text-white mb-3"></i>
+                    <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
+                    <p class="text-white mb-0">Satisfied Clients</p>
+                </div>
+                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.7s">
+                    <i class="fa fa-car fa-2x text-white mb-3"></i>
+                    <h2 class="text-white mb-2" data-toggle="counter-up">1234</h2>
+                    <p class="text-white mb-0">Compleate Projects</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fact End -->
+
+
+    <!-- Service Start -->
+    <div class="container-xxl service py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-primary text-uppercase">// Our Services //</h6>
+                <h1 class="mb-5">Explore Our Services</h1>
+            </div>
+            <div class="row g-4 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="col-lg-4">
+                    <div class="nav w-100 nav-pills me-4" id="service-tabs">
+                        <!-- Service navigation pills will be populated here by JavaScript -->
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="tab-content w-100" id="service-content">
+                        <!-- Service content tabs will be populated here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Service End -->
+
+    <!-- Customer Manage Start -->
+    <div class="container customer-save my-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="customer-info p-4 h-100 d-flex flex-column justify-content-center rounded">
+                        <h1 class="text-white mb-4">Manage Your Customer Information</h1>
+                        <p class="text-white opacity-75 mb-4">Update and manage customer details such as name, address, and vehicle information easily.</p>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="customer-form h-100 d-flex flex-column">
+                        <div class="customer-form-header text-center">
+                            <h1 class="text-white mb-0">Customer Information</h1>
+                        </div>
+                        <div class="p-4">
+                            <form id="customerForm">
+                                <input type="hidden" id="customerId">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <input type="text" id="userName" class="form-control" placeholder="Enter user name" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="number" id="userId" class="form-control" placeholder="User ID (Auto Generated)" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" id="address" class="form-control" placeholder="Enter address" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" id="vehicleName" class="form-control" placeholder="Enter vehicle name" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="text" id="numberPlate" class="form-control" placeholder="Enter number plate" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="button" class="btn btn-primary w-100" onclick="saveCustomer()">Save Customer</button>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="button" class="btn btn-secondary w-100" onclick="clearForm()">Clear Form</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Manage End -->
+
+
+
+    <!-- Booking Start -->
+    <div class="container booking my-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="booking-info p-4 h-100 d-flex flex-column justify-content-center rounded">
+                        <h1 class="text-white mb-4">Certified and Award-Winning Car Repair Service</h1>
+                        <p class="text-white opacity-75 mb-4">We provide top-quality vehicle servicing with state-of-the-art equipment and experienced technicians. Book your service today for a hassle-free experience.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="fas fa-certificate text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white mb-0">Certified Mechanics</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="fas fa-tools text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white mb-0">Modern Equipment</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                                <i class="fas fa-check-circle text-primary"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white mb-0">Quality Guaranteed</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="booking-form h-100 d-flex flex-column">
+                        <div class="booking-form-header text-center">
+                            <h1 class="text-white mb-0">Book A Service</h1>
+                        </div>
+                        <div class="p-4">
+                            <form id="bookingForm">
+                                <div class="row g-3">
+                                    <!-- Customer Number Plate -->
+                                    <div class="col-md-12">
+                                        <div class="input-with-icon">
+                                            <input type="text" id="numberPlateC" class="form-control" placeholder="Vehicle Number Plate" required>
+                                            <i class="fas fa-car"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden Customer ID -->
+                                    <div class="hidden-field">
+                                        <input type="number" id="customerIds" class="form-control" placeholder="Customer ID" readonly required>
+                                    </div>
+
+                                    <!-- Technician Name -->
+                                    <div class="col-md-12">
+                                        <div class="input-with-icon">
+                                            <input type="text" id="technicianName" class="form-control" placeholder="Technician Name">
+                                            <i class="fas fa-user-cog"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden Technician ID -->
+                                    <div class="hidden-field">
+                                        <input type="number" id="technicianId" class="form-control" placeholder="Technician ID" readonly>
+                                    </div>
+
+                                    <!-- Service Name -->
+                                    <div class="col-md-12">
+                                        <div class="input-with-icon">
+                                            <input type="text" id="serviceName" class="form-control" placeholder="Service Name" required>
+                                            <i class="fas fa-wrench"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden Service ID -->
+                                    <div class="hidden-field">
+                                        <input type="number" id="serviceId" class="form-control" placeholder="Service ID" readonly required>
+                                    </div>
+
+                                    <!-- Booking Date -->
+                                    <div class="col-md-6">
+                                        <div class="input-with-icon">
+                                            <input type="date" id="bookingDate" class="form-control" required>
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Booking Time -->
+                                    <div class="col-12">
+                                        <div class="input-with-icon">
+                                            <input type="time" id="bookingTime" class="form-control" required>
+<!--                                            <i class="fas fa-clock"></i>-->
+                                        </div>
+                                    </div>
+
+                                    <!-- Mobile Number -->
+                                    <div class="col-12">
+                                        <div class="input-with-icon">
+                                            <input type="tel" id="mobileNumber" class="form-control" placeholder="Mobile Number" required>
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="col-12">
+                                        <button class="btn btn-book w-100 py-3" type="button" onclick="submitBooking()">
+                                            Book Now <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div id="responseMessage" class="mt-3 text-center alert" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Booking End -->
+
+
+<!--Technician Team Start-->
+    <div class="container mt-5 mb-5" id="technicianContainer">
+        <div class="technician-header">
+            <h5>// OUR TECHNICIANS //</h5>
+            <h1>Our Expert Technicians</h1>
+        </div>
+
+        <div class="row" id="techniciansContainer">
+            <!-- Technician cards will be loaded here via AJAX -->
+            <div class="col-12 text-center" id="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Loading technicians...</p>
+            </div>
+        </div>
+    </div>
+
+    <!--Technician End Start-->
+
+
+    <!-- Testimonial Start -->
+
+    <div class="testimonial-container">
+
+        <div class="container mt-5 mb-5" >
+            <div class="technician-header">
+                <h5>// OUR TESTIMONIAL //</h5>
+                <h1>Our Expert Testimonial</h1>
+            </div>
+        </div>
+        <div class="row g-0">
+            <div class="col-md-5 testimonial-form">
+                <h3 class="text-center mb-4">Write a Testimonial</h3>
+                <form id="testimonialForm">
+                    <div class="mb-3">
+                        <input type="text" id="clientName" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" id="clientProfession" class="form-control" placeholder="Your Profession" required>
+                    </div>
+                    <div class="mb-3">
+                        <textarea id="clientMessage" class="form-control" rows="4" placeholder="Your Testimonial" required></textarea>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <input type="file" id="clientPhoto" class="d-none" accept="image/*">
+                        <label for="clientPhoto" class="btn btn-outline-primary">
+                            <i class="fas fa-upload"></i> Upload Profile Picture
+                        </label>
+                        <img id="photoPreview" class="photo-preview mt-3" src="" style="display:none;">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Submit Testimonial</button>
+                </form>
+            </div>
+            <div class="col-md-7">
+                <div class="testimonial-preview" id="testimonialCarousel">
+                    <!-- Testimonials will be dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Testimonial End -->
+
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Address</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Opening Hours</h4>
+                    <h6 class="text-light">Monday - Friday:</h6>
+                    <p class="mb-4">09.00 AM - 09.00 PM</p>
+                    <h6 class="text-light">Saturday - Sunday:</h6>
+                    <p class="mb-0">09.00 AM - 12.00 PM</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Services</h4>
+                    <a class="btn btn-link" href="">Diagnostic Test</a>
+                    <a class="btn btn-link" href="">Engine Servicing</a>
+                    <a class="btn btn-link" href="">Tires Replacement</a>
+                    <a class="btn btn-link" href="">Oil Changing</a>
+                    <a class="btn btn-link" href="">Vacuam Cleaning</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Newsletter</h4>
+                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+
+                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                        <br>Distributed By: <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+    let token = localStorage.getItem("authToken");
+
+    function saveCustomer() {
+        var formData = {
+            userId: $("#userId").val(),
+            address: $("#address").val(),
+            vehicleName: $("#vehicleName").val(),
+            numberPlate: $("#numberPlate").val()
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/api/v1/customer/save",
+            type: "POST",
+            headers: { "Authorization": "Bearer " + token },
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function (response) {
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Customer saved successfully!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function (error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error!",
+                    text: error.responseJSON?.message || "Error saving customer.",
+                    showConfirmButton: true
+                });
+            }
+        });
+
+    }
+
+    $("#userName").on("change", function () {
+        let userName = $(this).val();
+        if (userName.trim() !== "") {
+            $.ajax({
+                url: `http://localhost:8080/api/v1/user/getByName/${userName}`,
+                type: "GET",
+                headers: { "Authorization": "Bearer " + token },
+                success: function (user) {
+                    if (user && user.userId) {
+                        $("#userId").val(user.userId);
+                    } else {
+                        $("#userId").val("");
+                    }
+                },
+                error: function () {
+                    $("#userId").val("");
+                }
+            });
+        }
+    });
+
+    function clearForm() {
+        $("#customerForm")[0].reset();
+        $("#customerId").val("");
+    }
+    // Customer Ajax Request  End
+
+
+
+
+
+
+    // Booking Ajax Request  Start
+
+    // Save Booking Function
+    async function submitBooking() {
+        const bookingData = {
+            customerId: parseInt(document.getElementById("customerIds").value),
+            technicianId: parseInt(document.getElementById("technicianId").value) || null,
+            serviceId: parseInt(document.getElementById("serviceId").value),
+            bookingDate: document.getElementById("bookingDate").value, // Format: YYYY-MM-DD
+            bookingTime: document.getElementById("bookingTime").value + ":00", // Format: HH:mm:ss
+            mobileNumber: parseInt(document.getElementById("mobileNumber").value),
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/v1/booking/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify(bookingData),
+            });
+
+            if (response.ok) {
+                const result = await response.text();
+
+                let timerInterval;
+                Swal.fire({
+                    title: "Booking Successful!",
+                    html: "This alert will close in <b></b> milliseconds.",
+                    icon: "success",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup().querySelector("b");
+                        timerInterval = setInterval(() => {
+                            timer.textContent = `${Swal.getTimerLeft()}`;
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                        resetForm(); // Reset form after alert closes
+                    },
+                });
+            } else {
+                const errorMsg = await response.text();
+                Swal.fire({
+                    icon: "error",
+                    title: "Booking Failed",
+                    text: errorMsg || "An error occurred while saving booking.",
+                });
+            }
+        } catch (error) {
+            console.error("Error saving booking:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Failed to save booking. Please try again.",
+            });
+        }
+    }
+
+
+
+
+    // Attach event listener to "Book Now" button
+    document.querySelector("#bookingForm button").addEventListener("click", function() {
+        saveOrUpdateBooking(false); // Call save on click
+    });
+
+
+    // Helper function to show messages
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('responseMessage');
+        messageDiv.innerHTML = message;
+        messageDiv.className = type === "error" ? "mt-3 text-danger" : "mt-3 text-white";
+
+        // Clear message after 5 seconds
+        setTimeout(() => {
+            messageDiv.innerHTML = "";
+        }, 5000);
+    }
+
+    // Reset form after successful submission
+    function resetForm() {
+        document.getElementById('bookingForm').reset();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let token = localStorage.getItem("authToken");
+
+        // Function to fetch data with async/await and Authorization header
+        async function fetchData(url, method = 'GET') {
+            try {
+                let response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    // Handle different error scenarios
+                    if (response.status === 404) {
+                        return null; // Not found
+                    }
+                    if (response.status === 401) {
+                        showMessage("Unauthorized. Please log in again.", "error");
+                        // Optionally redirect to login page
+                        return null;
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                showMessage("An error occurred while fetching data", "error");
+                return null;
+            }
+        }
+
+        // Lookup customer by number plate
+        async function getByNumberPlate(numberPlate) {
+            try {
+                const response = await fetchData(`http://localhost:8080/api/v1/customer/getByNumberPlate/${numberPlate}`);
+                return response;
+            } catch (error) {
+                console.error("Error in getByNumberPlate:", error);
+                return null;
+            }
+        }
+
+        // Lookup technician by name
+        async function getByname(name) {
+            try {
+                const response = await fetchData(`http://localhost:8080/api/v1/technician/getByname/${name}`);
+                return response;
+            } catch (error) {
+                console.error("Error in getByname:", error);
+                return null;
+            }
+        }
+
+        // Lookup service by name
+        async function getByserviceName(name) {
+            try {
+                const response = await fetchData(`http://localhost:8080/api/v1/service/getByserviceName/${name}`);
+                return response;
+            } catch (error) {
+                console.error("Error in getByserviceName:", error);
+                return null;
+            }
+        }
+
+        // Event Listeners for various inputs
+        document.getElementById('numberPlateC').addEventListener('blur', async function () {
+            const numberPlate = this.value.trim();
+            if (numberPlate) {
+                const customer = await getByNumberPlate(numberPlate);
+                if (customer) {
+                    document.getElementById('customerIds').value = customer.customerId;
+                    showMessage("Customer found", "success");
+                } else {
+                    showMessage("Customer not found with this number plate", "error");
+                    document.getElementById('customerIds').value = "";
+                }
+            }
+        });
+
+        document.getElementById('technicianName').addEventListener('blur', async function () {
+            const name = this.value.trim();
+            if (name) {
+                const technician = await getByname(name);
+                if (technician) {
+                    document.getElementById('technicianId').value = technician.technicianId;
+                    showMessage("Technician found", "success");
+                } else {
+                    showMessage("Technician not found", "error");
+                    document.getElementById('technicianId').value = "";
+                }
+            }
+        });
+
+        document.getElementById('serviceName').addEventListener('blur', async function () {
+            const name = this.value.trim();
+            if (name) {
+                const service = await getByserviceName(name);
+                if (service) {
+                    document.getElementById('serviceId').value = service.serviceId;
+                    showMessage("Service found", "success");
+                } else {
+                    showMessage("Service not found", "error");
+                    document.getElementById('serviceId').value = "";
+                }
+            }
+        });
+
+        // Utility function to show messages
+        function showMessage(message, type) {
+            const messageElement = document.getElementById('messageContainer');
+            if (messageElement) {
+                messageElement.textContent = message;
+                messageElement.className = `message ${type}`;
+
+                // Optional: Auto-clear message after 3 seconds
+                setTimeout(() => {
+                    messageElement.textContent = '';
+                    messageElement.className = '';
+                }, 3000);
+            }
+        }
+    });
+
+
+
+
+    // Technician
+
+
+
+    $(document).ready(function() {
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/technician/getAll', // Adjust API URL as needed
+            type: 'GET',
+            headers : {
+                "Authorization" : "Bearer " + token
+            },
+            dataType: 'json',
+            success: function(technicians) {
+                const container = $('#techniciansContainer');
+                container.empty();
+
+                if (technicians.length === 0) {
+                    container.append('<div class="col-12 text-center"><p>No technicians found.</p></div>');
+                    return;
+                }
+
+                technicians.forEach(function(tech) {
+                    const imgSrc = tech.photoUrl ? `http://localhost:8080${tech.photoUrl}` : 'assets/img/default-technician.jpg';
+
+                    const cardHtml = `
+                        <div class="col-md-4">
+                            <div class="card technician-card">
+                                <img src="${imgSrc}" class="card-img-top technician-img" alt="${tech.name}" loading="lazy"
+                                     onerror="this.onerror=null;this.src='assets/img/default-technician.jpg';">
+                                <div class="card-body technician-info">
+                                    <h5 class="technician-name">${tech.name}</h5>
+                                    <p class="technician-expertise">Expertise: ${tech.expertise}</p>
+                                    <div class="social-links">
+                                        ${tech.facebookLink ? `<a href="${tech.facebookLink}" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>` : ''}
+                                        ${tech.instagramLink ? `<a href="${tech.instagramLink}" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>` : ''}
+                                        ${tech.twitterLink ? `<a href="${tech.twitterLink}" target="_blank" title="Twitter"><i class="fab fa-twitter"></i></a>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.append(cardHtml);
+                });
+            },
+            error: function() {
+                alert('Failed to load technicians.');
+            }
+        });
+    });
+
+
+
+    //Testimonial Start
+
+
+
+    $(document).ready(function () {
+        // Photo preview
+        $("#clientPhoto").on('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#photoPreview').attr('src', e.target.result).show();
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Submit testimonial form
+        $("#testimonialForm").submit(function (event) {
+            event.preventDefault();
+
+            let formData = new FormData();
+            formData.append("name", $("#clientName").val());
+            formData.append("profession", $("#clientProfession").val());
+            formData.append("message", $("#clientMessage").val());
+
+            let fileInput = $("#clientPhoto")[0].files[0];
+            if (fileInput) {
+                formData.append("photo", fileInput);
+            }
+
+            $.ajax({
+                url: "http://localhost:8080/api/v1/testimonial/save",
+                type: "POST",
+                headers : {
+                    "Authorization" : "Bearer " + token
+                },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    alert("Testimonial submitted successfully!");
+                    loadTestimonials();
+                    $("#testimonialForm")[0].reset();
+                    $('#photoPreview').hide();
+                },
+                error: function (xhr) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+
+
+        let token = localStorage.getItem("authToken");
+        console.log("Token:", token);
+
+        function loadTestimonials() {
+            $.ajax({
+                url: "http://localhost:8080/api/v1/testimonial/getAll",
+                type: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                },
+                success: function (testimonials) {
+                    console.log("Testimonials received:", testimonials);
+                    $("#testimonialCarousel").empty();
+                    testimonials.forEach(function (testimonial) {
+                        // Ensure the full URL is constructed correctly
+                        let imgSrc = testimonial.photoPath
+                            ? `http://localhost:8080${testimonial.photoPath}`
+                            : "https://via.placeholder.com/100";
+
+                        let testimonialItem = `
+                    <div class="testimonial-card">
+                        <img src="${imgSrc}" alt="${testimonial.name}" style="max-width:100px; max-height:100px; object-fit:cover;">
+                        <h5 class="mb-1">${testimonial.name}</h5>
+                        <p class="text-muted mb-3">${testimonial.profession}</p>
+                        <p class="text-center">${testimonial.message}</p>
+                    </div>`;
+                        $("#testimonialCarousel").append(testimonialItem);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Full error details:", {
+                        status: xhr.status,
+                        responseText: xhr.responseText,
+                        statusText: xhr.statusText,
+                        error: error
+                    });
+                    alert(`Error loading testimonials: ${xhr.responseText || error}`);
+                }
+            });
+        }
+
+
+        loadTestimonials();
+    });
+
+//Testimonial End
+
+
+
+
+    function getAllServices() {
+        // Get the authentication token from localStorage
+        let token = localStorage.getItem("authToken");
+        const baseUrl = "http://localhost:8080"; // Add base URL definition
+
+        // Log token for debugging (remove in production)
+        console.log("Token present:", !!token);
+
+        $.ajax({
+            url: baseUrl + '/api/v1/service/getAll', // Add baseUrl
+            method: 'GET',
+            dataType: 'json',
+            headers: {
+                "Authorization": token ? "Bearer " + token : ""
+            },
+            success: function(response) {
+                console.log("Services loaded successfully:", response);
+                displayServices(response, baseUrl); // Pass baseUrl to display function
+            },
+            error: function(xhr, status, error) {
+                console.error('Error details:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    responseText: xhr.responseText
+                });
+
+                if (xhr.status === 401 || xhr.status === 403) {
+                    alert('Authentication failed. Please log in again.');
+                } else if (xhr.status === 404) {
+                    alert('Service API endpoint not found. Check the URL.');
+                } else {
+                    alert('Failed to load services. Please try again later.');
+                }
+            }
+        });
+    }
+
+    // Function to display services in the UI
+    function displayServices(services, baseUrl) { // Accept baseUrl parameter
+        // Clear existing navigation buttons
+        const navPills = $('#service-tabs');
+        navPills.empty();
+
+        // Clear existing tab content
+        const tabContent = $('#service-content');
+        tabContent.empty();
+
+        // Populate services
+        services.forEach((service, index) => {
+            // Determine icon based on service name or use default
+            let iconClass = 'fa-car-side';
+            if (service.serviceName.includes('Engine')) {
+                iconClass = 'fa-car';
+            } else if (service.serviceName.includes('Tire')) {
+                iconClass = 'fa-cog';
+            } else if (service.serviceName.includes('Oil')) {
+                iconClass = 'fa-oil-can';
+            }
+
+            // Create nav pill button
+            const isActive = index === 0 ? 'active' : '';
+            const navButton = `
+        <button class="nav-link w-100 d-flex align-items-center text-start p-4 mb-4 ${isActive}"
+                data-bs-toggle="pill"
+                data-bs-target="#tab-pane-${service.serviceId}"
+                type="button">
+            <i class="fa ${iconClass} fa-2x me-3"></i>
+            <h4 class="m-0">${service.serviceName}</h4>
+        </button>
+    `;
+            navPills.append(navButton);
+
+            // Fix the image URL by prepending baseUrl if photoUrl exists
+            const photoUrl = service.photoUrl ? baseUrl + service.photoUrl : 'img/service-default.jpg';
+
+            // Create tab content
+            const showActive = index === 0 ? 'show active' : '';
+            const tabPane = `
+        <div class="tab-pane fade ${showActive}" id="tab-pane-${service.serviceId}">
+            <div class="row g-4">
+                <div class="col-md-6" style="min-height: 350px;">
+                    <div class="position-relative h-100">
+                        <img class="position-absolute img-fluid w-100 h-100"
+                             src="${photoUrl}"
+                             style="object-fit: cover;" alt="${service.serviceName}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="mb-3">${service.serviceName}</h3>
+                    <p class="mb-4">${service.description}</p>
+                    <p><i class="fa fa-check text-success me-3"></i>Quality Servicing</p>
+                    <p><i class="fa fa-check text-success me-3"></i>Expert Workers</p>
+                    <p><i class="fa fa-check text-success me-3"></i>Modern Equipment</p>
+                    <p class="mb-4">Price: $${service.price.toFixed(2)}</p>
+                    <a href="service-details.html?id=${service.serviceId}" class="btn btn-primary py-3 px-5 mt-3">
+                        Read More<i class="fa fa-arrow-right ms-3"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+            tabContent.append(tabPane);
+        });
+    }
+
+    // Call the function when document is ready
+    $(document).ready(function() {
+        getAllServices();
+    });
+
+
+
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,956 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Bookings Management</title>-->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container my-5">-->
+<!--    <h2 class="text-center">Bookings Management</h2>-->
+
+<!--    &lt;!&ndash; Update Booking Form &ndash;&gt;-->
+<!--    <div class="mb-4">-->
+<!--        <h4>Update Booking</h4>-->
+<!--        <form id="updateBookingForm">-->
+<!--            <div class="form-group">-->
+<!--                <label>Booking ID:</label>-->
+<!--                <input type="number" id="updateBookingId" class="form-control" placeholder="Booking ID" required>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Customer ID:</label>-->
+<!--                <input type="number" id="updateCustomerId" class="form-control" placeholder="Customer ID" required>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Technician ID:</label>-->
+<!--                <input type="number" id="updateTechnicianId" class="form-control" placeholder="Technician ID">-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Service ID:</label>-->
+<!--                <input type="number" id="updateServiceId" class="form-control" placeholder="Service ID" required>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Booking Date:</label>-->
+<!--                <input type="date" id="updateBookingDate" class="form-control" required>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Booking Time:</label>-->
+<!--                <input type="time" id="updateBookingTime" class="form-control" required>-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                <label>Mobile Number:</label>-->
+<!--                <input type="tel" id="updateMobileNumber" class="form-control" placeholder="Mobile Number" required>-->
+<!--            </div>-->
+<!--            <button type="button" class="btn btn-primary" onclick="updateBooking()">Update Booking</button>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Bookings List &ndash;&gt;-->
+<!--    <div class="mb-4">-->
+<!--        <h4>All Bookings</h4>-->
+<!--        <table class="table table-bordered">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--                <th>Booking ID</th>-->
+<!--                <th>Customer ID</th>-->
+<!--                <th>Technician ID</th>-->
+<!--                <th>Service ID</th>-->
+<!--                <th>Booking Date</th>-->
+<!--                <th>Booking Time</th>-->
+<!--                <th>Mobile Number</th>-->
+<!--                <th>Actions</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody id="bookingsTable"></tbody>-->
+<!--        </table>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Response Message &ndash;&gt;-->
+<!--    <div id="responseMessage" class="mt-3 text-danger"></div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    let token = localStorage.getItem("authToken");-->
+
+<!--    // Function to fetch all bookings-->
+<!--    function fetchAllBookings() {-->
+<!--        fetch("http://localhost:8080/api/v1/booking/getAll", {-->
+<!--            method: 'GET',-->
+<!--            headers: {-->
+<!--                // 'Content-Type': 'application/json',-->
+<!--                'Authorization': `Bearer ` + token // Replace authToken with your actual token variable-->
+<!--            }-->
+<!--        })-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const tableBody = document.getElementById("bookingsTable");-->
+<!--                tableBody.innerHTML = "";-->
+<!--                data.forEach(booking => {-->
+<!--                    const row = document.createElement("tr");-->
+<!--                    row.innerHTML = `-->
+<!--                    <td>${booking.bookingId}</td>-->
+<!--                    <td>${booking.customerId}</td>-->
+<!--                    <td>${booking.technicianId || "N/A"}</td>-->
+<!--                    <td>${booking.serviceId}</td>-->
+<!--                    <td>${booking.bookingDate}</td>-->
+<!--                    <td>${booking.bookingTime}</td>-->
+<!--                    <td>${booking.mobileNumber}</td>-->
+<!--                `;-->
+
+<!--                    // Add event listener to populate form when a row is clicked-->
+<!--                    row.addEventListener("click", () => populateForm(booking));-->
+
+<!--                    tableBody.appendChild(row);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(error => console.error("Error fetching bookings:", error));-->
+<!--    }-->
+
+<!--    // Function to populate the form fields with the clicked row data-->
+<!--    function populateForm(booking) {-->
+<!--        document.getElementById("updateBookingId").value = booking.bookingId;-->
+<!--        document.getElementById("updateCustomerId").value = booking.customerId;-->
+<!--        document.getElementById("updateTechnicianId").value = booking.technicianId || "";-->
+<!--        document.getElementById("updateServiceId").value = booking.serviceId;-->
+<!--        document.getElementById("updateBookingDate").value = booking.bookingDate;-->
+<!--        document.getElementById("updateBookingTime").value = booking.bookingTime.slice(0, 5); // Extract HH:mm-->
+<!--        document.getElementById("updateMobileNumber").value = booking.mobileNumber;-->
+<!--    }-->
+
+<!--    // Function to update booking-->
+<!--    function updateBooking() {-->
+<!--        const bookingData = {-->
+<!--            bookingId: parseInt(document.getElementById("updateBookingId").value),-->
+<!--            customerId: parseInt(document.getElementById("updateCustomerId").value),-->
+<!--            technicianId: document.getElementById("updateTechnicianId").value ? parseInt(document.getElementById("updateTechnicianId").value) : null,-->
+<!--            serviceId: parseInt(document.getElementById("updateServiceId").value),-->
+<!--            bookingDate: document.getElementById("updateBookingDate").value,-->
+<!--            bookingTime: document.getElementById("updateBookingTime").value + ":00",-->
+<!--            mobileNumber: document.getElementById("updateMobileNumber").value-->
+<!--        };-->
+
+<!--        fetch("http://localhost:8080/api/v1/booking/update", {-->
+<!--            method: "PUT",-->
+<!--            headers: {-->
+<!--                "Content-Type": "application/json",-->
+<!--                "Authorization" : "Bearer " + token-->
+<!--            },-->
+<!--            body: JSON.stringify(bookingData)-->
+<!--        })-->
+<!--            .then(response => response.text())-->
+<!--            .then(result => {-->
+<!--                document.getElementById("responseMessage").innerText = result;-->
+<!--                fetchAllBookings(); // Refresh table after update-->
+<!--            })-->
+<!--            .catch(error => console.error("Error updating booking:", error));-->
+<!--    }-->
+
+<!--    // Load all bookings on page load-->
+<!--    window.onload = fetchAllBookings;-->
+
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookings Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="sweetalert2.min.css">
+</head>
+<body>
+
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-4">📅 Bookings Management</h2>
+
+    <!-- Booking Details Section -->
+    <div class="card shadow p-4 mb-4">
+        <h4 class="text-primary">🔍 Search Booking Details</h4>
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="number" id="searchBookingId" class="form-control" placeholder="Enter Booking ID">
+                    <button class="btn btn-primary" onclick="fetchBookingDetails()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Details Card -->
+        <div id="bookingDetailsCard" style="display: none;">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Booking Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">📅 Booking Information</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <td id="detailBookingId"></td>
+                                </tr>
+                                <tr>
+                                    <th>Date</th>
+                                    <td id="detailBookingDate"></td>
+                                </tr>
+                                <tr>
+                                    <th>Time</th>
+                                    <td id="detailBookingTime"></td>
+                                </tr>
+                                <tr>
+                                    <th>Mobile Number</th>
+                                    <td id="detailMobileNumber"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-3">👤 Customer Information</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <td id="detailCustomerId"></td>
+                                </tr>
+                                <tr>
+                                    <th>Address</th>
+                                    <td id="detailCustomerAddress"></td>
+                                </tr>
+                                <tr>
+                                    <th>Vehicle</th>
+                                    <td id="detailVehicleName"></td>
+                                </tr>
+                                <tr>
+                                    <th>Number Plate</th>
+                                    <td id="detailNumberPlate"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6 class="mb-3">🛠️ Service Information</h6>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Service ID</th>
+                                    <td id="detailServiceId"></td>
+                                </tr>
+                                <tr>
+                                    <th>Service Name</th>
+                                    <td id="detailServiceName"></td>
+                                </tr>
+                                <tr>
+                                    <th>Description</th>
+                                    <td id="detailServiceDescription"></td>
+                                </tr>
+                                <tr>
+                                    <th>Price</th>
+                                    <td id="detailServicePrice"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-3">👨‍🔧 Technician Information</h6>
+                            <div id="technicianContainer">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Technician ID</th>
+                                        <td id="detailTechnicianId"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Name</th>
+                                        <td id="detailTechnicianName"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Expertise</th>
+                                        <td id="detailTechnicianExpertise"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div id="noTechnicianMessage" style="display: none;" class="alert alert-warning">
+                                No technician assigned to this booking yet.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-3 d-flex justify-content-end">
+                        <button class="btn btn-primary me-2" onclick="populateUpdateForm()">
+                            <i class="fas fa-edit"></i> Edit Booking
+                        </button>
+                        <button class="btn btn-success" onclick="prepareEmailFromDetails()">
+                            <i class="fas fa-envelope"></i> Send Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bookingNotFoundAlert" class="alert alert-danger" style="display: none;">
+            Booking not found with the given ID.
+        </div>
+    </div>
+
+    <!-- Update Booking Form -->
+    <div class="card shadow p-4 mb-4">
+        <h4 class="text-primary">📝 Update Booking</h4>
+        <form id="updateBookingForm">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Booking ID:</label>
+                    <input type="number" id="updateBookingId" class="form-control" placeholder="Booking ID" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Customer ID:</label>
+                    <input type="number" id="updateCustomerId" class="form-control" placeholder="Customer ID" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Technician ID:</label>
+                    <input type="number" id="updateTechnicianId" class="form-control" placeholder="Technician ID">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Service ID:</label>
+                    <input type="number" id="updateServiceId" class="form-control" placeholder="Service ID" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Booking Date:</label>
+                    <input type="date" id="updateBookingDate" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Booking Time:</label>
+                    <input type="time" id="updateBookingTime" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Mobile Number:</label>
+                    <input type="tel" id="updateMobileNumber" class="form-control" placeholder="Mobile Number" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Customer Email:</label>
+                    <input type="email" id="updateCustomerEmail" class="form-control" placeholder="Customer Email" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Email Message:</label>
+                    <textarea id="emailMessage" class="form-control" rows="3" placeholder="Enter email message"></textarea>
+                </div>
+                <div class="col-12 d-flex justify-content-between mt-3">
+                    <button type="button" class="btn btn-primary px-4" onclick="updateBooking()">🔄 Update Booking</button>
+                    <button type="button" class="btn btn-success px-4" onclick="sendBookingEmail()">📩 Send Mail</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bookings List -->
+    <div class="card shadow p-4">
+        <h4 class="text-primary">📋 All Bookings</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer ID</th>
+                    <th>Technician ID</th>
+                    <th>Service ID</th>
+                    <th>Booking Date</th>
+                    <th>Booking Time</th>
+                    <th>Mobile Number</th>
+                </tr>
+                </thead>
+                <tbody id="bookingsTable">
+                <!-- Booking rows will be inserted dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Response Message -->
+    <div id="responseMessage" class="mt-3 text-center fw-bold"></div>
+</div>
+
+<script>
+    let token = localStorage.getItem("authToken");
+
+    // Function to fetch booking details by ID
+    function fetchBookingDetails() {
+        const bookingId = document.getElementById("searchBookingId").value;
+        if (!bookingId) {
+            Swal.fire("Error", "Please enter a booking ID", "error");
+            return;
+        }
+
+        // Hide previous results
+        document.getElementById("bookingDetailsCard").style.display = "none";
+        document.getElementById("bookingNotFoundAlert").style.display = "none";
+
+        fetch(`http://localhost:8080/api/v1/booking/details/${bookingId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Booking not found');
+                }
+                return response.json();
+            })
+            .then(data => {
+                displayBookingDetails(data);
+            })
+            .catch(error => {
+                console.error("Error fetching booking details:", error);
+                document.getElementById("bookingNotFoundAlert").style.display = "block";
+            });
+    }
+
+    // Function to display booking details
+    function displayBookingDetails(details) {
+        // Booking details
+        document.getElementById("detailBookingId").textContent = details.booking.bookingId;
+        document.getElementById("detailBookingDate").textContent = details.booking.bookingDate;
+        document.getElementById("detailBookingTime").textContent = details.booking.bookingTime;
+        document.getElementById("detailMobileNumber").textContent = details.booking.mobileNumber;
+
+        // Customer details
+        document.getElementById("detailCustomerId").textContent = details.customer.customerId;
+        document.getElementById("detailCustomerAddress").textContent = details.customer.address;
+        document.getElementById("detailVehicleName").textContent = details.customer.vehicleName;
+        document.getElementById("detailNumberPlate").textContent = details.customer.numberPlate;
+
+        // Service details
+        document.getElementById("detailServiceId").textContent = details.service.serviceId;
+        document.getElementById("detailServiceName").textContent = details.service.serviceName;
+        document.getElementById("detailServiceDescription").textContent = details.service.description;
+        document.getElementById("detailServicePrice").textContent = `$${details.service.price.toFixed(2)}`;
+
+        // Technician details (may be null)
+        if (details.technician) {
+            document.getElementById("technicianContainer").style.display = "block";
+            document.getElementById("noTechnicianMessage").style.display = "none";
+            document.getElementById("detailTechnicianId").textContent = details.technician.technicianId;
+            document.getElementById("detailTechnicianName").textContent = details.technician.name;
+            document.getElementById("detailTechnicianExpertise").textContent = details.technician.expertise;
+        } else {
+            document.getElementById("technicianContainer").style.display = "none";
+            document.getElementById("noTechnicianMessage").style.display = "block";
+        }
+
+        // Display the card
+        document.getElementById("bookingDetailsCard").style.display = "block";
+    }
+
+    // Function to populate the update form with details
+    function populateUpdateForm() {
+        const bookingId = document.getElementById("detailBookingId").textContent;
+        const customerId = document.getElementById("detailCustomerId").textContent;
+        const technicianId = document.getElementById("detailTechnicianId")?.textContent || "";
+        const serviceId = document.getElementById("detailServiceId").textContent;
+        const bookingDate = document.getElementById("detailBookingDate").textContent;
+        const bookingTime = document.getElementById("detailBookingTime").textContent.slice(0, 5); // HH:MM
+        const mobileNumber = document.getElementById("detailMobileNumber").textContent;
+
+        // Populate update form
+        document.getElementById("updateBookingId").value = bookingId;
+        document.getElementById("updateCustomerId").value = customerId;
+        document.getElementById("updateTechnicianId").value = technicianId;
+        document.getElementById("updateServiceId").value = serviceId;
+        document.getElementById("updateBookingDate").value = bookingDate;
+        document.getElementById("updateBookingTime").value = bookingTime;
+        document.getElementById("updateMobileNumber").value = mobileNumber;
+
+        // Fetch customer email for the selected customer
+        fetch(`http://localhost:8080/api/v1/user/getEmailByCustomerId/${customerId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.text())
+            .then(email => {
+                document.getElementById("updateCustomerEmail").value = email || "Email not found";
+            })
+            .catch(error => {
+                console.error("Error fetching customer email:", error);
+                document.getElementById("updateCustomerEmail").value = "";
+            });
+
+        // Scroll to update form
+        document.getElementById("updateBookingForm").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Function to prepare email based on booking details
+    function prepareEmailFromDetails() {
+        const serviceName = document.getElementById("detailServiceName").textContent;
+        const bookingDate = document.getElementById("detailBookingDate").textContent;
+        const bookingTime = document.getElementById("detailBookingTime").textContent;
+        const vehicleName = document.getElementById("detailVehicleName").textContent;
+        const numberPlate = document.getElementById("detailNumberPlate").textContent;
+
+        // Create email message template
+        const emailMessage = `Dear Customer,
+
+We are confirming your booking for the ${serviceName} service on ${bookingDate} at ${bookingTime}.
+
+Vehicle details:
+- Vehicle: ${vehicleName}
+- Number Plate: ${numberPlate}
+
+Thank you for choosing our service. If you need to reschedule or have any questions, please contact us.
+
+Best regards,
+Hybrid Hub Service Team`;
+
+        // Populate email fields
+        document.getElementById("emailMessage").value = emailMessage;
+
+        // Scroll to email section
+        document.getElementById("emailMessage").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Function to fetch all bookings
+    function fetchAllBookings() {
+        fetch("http://localhost:8080/api/v1/booking/getAll", {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ` + token
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById("bookingsTable");
+                tableBody.innerHTML = "";
+                data.forEach(booking => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                    <td>${booking.bookingId}</td>
+                    <td>${booking.customerId}</td>
+                    <td>${booking.technicianId || "N/A"}</td>
+                    <td>${booking.serviceId}</td>
+                    <td>${booking.bookingDate}</td>
+                    <td>${booking.bookingTime}</td>
+                    <td>${booking.mobileNumber}</td>
+                `;
+
+                    // Add event listener to populate form when a row is clicked
+                    row.addEventListener("click", () => populateForm(booking));
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error("Error fetching bookings:", error));
+    }
+
+    // Function to populate the form fields with the clicked row data
+    function populateForm(booking) {
+        document.getElementById("updateBookingId").value = booking.bookingId;
+        document.getElementById("updateCustomerId").value = booking.customerId;
+        document.getElementById("updateTechnicianId").value = booking.technicianId || "";
+        document.getElementById("updateServiceId").value = booking.serviceId;
+        document.getElementById("updateBookingDate").value = booking.bookingDate;
+        document.getElementById("updateBookingTime").value = booking.bookingTime.slice(0, 5); // Extract HH:mm
+        document.getElementById("updateMobileNumber").value = booking.mobileNumber;
+
+        // Fetch and populate customer email
+        fetch(`http://localhost:8080/api/v1/user/getEmailByCustomerId/${booking.customerId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ` + token
+            }
+        })
+            .then(response => response.text())
+            .then(email => {
+                document.getElementById("updateCustomerEmail").value = email || "Email not found";
+            })
+            .catch(error => {
+                console.error("Error fetching customer email:", error);
+                document.getElementById("updateCustomerEmail").value = ""; // Clear email if fetch fails
+            });
+    }
+
+    // Function to update booking
+    function updateBooking() {
+        const bookingData = {
+            bookingId: parseInt(document.getElementById("updateBookingId").value),
+            customerId: parseInt(document.getElementById("updateCustomerId").value),
+            technicianId: document.getElementById("updateTechnicianId").value
+                ? parseInt(document.getElementById("updateTechnicianId").value)
+                : null,
+            serviceId: parseInt(document.getElementById("updateServiceId").value),
+            bookingDate: document.getElementById("updateBookingDate").value,
+            bookingTime: document.getElementById("updateBookingTime").value + ":00",
+            mobileNumber: document.getElementById("updateMobileNumber").value,
+        };
+
+        Swal.fire({
+            title: "Do you want to save the changes?",
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Save",
+            denyButtonText: `Don't save`,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("http://localhost:8080/api/v1/booking/update", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token,
+                    },
+                    body: JSON.stringify(bookingData),
+                })
+                    .then((response) => response.text())
+                    .then((result) => {
+                        Swal.fire("Saved!", "Your booking has been updated.", "success");
+                        document.getElementById("responseMessage").innerText = result;
+                        fetchAllBookings(); // Refresh table after update
+                    })
+                    .catch((error) => {
+                        console.error("Error updating booking:", error);
+                        Swal.fire("Error!", "Failed to update booking.", "error");
+                    });
+            } else if (result.isDenied) {
+                Swal.fire("Changes are not saved", "", "info");
+            }
+        });
+    }
+
+    // Function to send booking email
+    function sendBookingEmail() {
+        const emailData = {
+            to: document.getElementById("updateCustomerEmail").value,
+            subject: "Booking Confirmation - Hybrid Hub",
+            body: document.getElementById("emailMessage").value,
+        };
+
+        fetch("http://localhost:8080/api/v1/email/send", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify(emailData),
+        })
+            .then((response) => response.text())
+            .then((result) => {
+                document.getElementById("responseMessage").innerText = result;
+
+                let timerInterval;
+                Swal.fire({
+                    title: "Email Sent!",
+                    html: "This alert will close in <b></b> milliseconds.",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    icon: "success",
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup().querySelector("b");
+                        timerInterval = setInterval(() => {
+                            timer.textContent = `${Swal.getTimerLeft()}`;
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    },
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                        console.log("Email confirmation closed automatically.");
+                    }
+                });
+            })
+            .catch((error) => {
+                console.error("Error sending email:", error);
+                document.getElementById("responseMessage").innerText = "Failed to send email";
+                Swal.fire("Error!", "Failed to send email. Please try again.", "error");
+            });
+    }
+
+    // Load all bookings on page load
+    window.onload = fetchAllBookings;
+</script>
+</body>
+</html>
+<!--waradunoth pahala eka ganna -->
+
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Bookings Management</title>-->
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+<!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+
+<!--    <script src="sweetalert2.min.js"></script>-->
+<!--    <link rel="stylesheet" href="sweetalert2.min.css">-->
+<!--</head>-->
+<!--<body>-->
+
+<!--<div class="container my-5">-->
+<!--    <h2 class="text-center fw-bold mb-4">📅 Bookings Management</h2>-->
+
+<!--    &lt;!&ndash; Update Booking Form &ndash;&gt;-->
+<!--    <div class="card shadow p-4 mb-4">-->
+<!--        <h4 class="text-primary">📝 Update Booking</h4>-->
+<!--        <form id="updateBookingForm">-->
+<!--            <div class="row g-3">-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Booking ID:</label>-->
+<!--                    <input type="number" id="updateBookingId" class="form-control" placeholder="Booking ID" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Customer ID:</label>-->
+<!--                    <input type="number" id="updateCustomerId" class="form-control" placeholder="Customer ID" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Technician ID:</label>-->
+<!--                    <input type="number" id="updateTechnicianId" class="form-control" placeholder="Technician ID">-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Service ID:</label>-->
+<!--                    <input type="number" id="updateServiceId" class="form-control" placeholder="Service ID" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Booking Date:</label>-->
+<!--                    <input type="date" id="updateBookingDate" class="form-control" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Booking Time:</label>-->
+<!--                    <input type="time" id="updateBookingTime" class="form-control" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Mobile Number:</label>-->
+<!--                    <input type="tel" id="updateMobileNumber" class="form-control" placeholder="Mobile Number" required>-->
+<!--                </div>-->
+<!--                <div class="col-md-6">-->
+<!--                    <label class="form-label">Customer Email:</label>-->
+<!--                    <input type="email" id="updateCustomerEmail" class="form-control" placeholder="Customer Email" required>-->
+<!--                </div>-->
+<!--                <div class="col-12">-->
+<!--                    <label class="form-label">Email Message:</label>-->
+<!--                    <textarea id="emailMessage" class="form-control" rows="3" placeholder="Enter email message"></textarea>-->
+<!--                </div>-->
+<!--                <div class="col-12 d-flex justify-content-between mt-3">-->
+<!--                    <button type="button" class="btn btn-primary px-4" onclick="updateBooking()">🔄 Update Booking</button>-->
+<!--                    <button type="button" class="btn btn-success px-4" onclick="sendBookingEmail()">📩 Send Mail</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Bookings List &ndash;&gt;-->
+<!--    <div class="card shadow p-4">-->
+<!--        <h4 class="text-primary">📋 All Bookings</h4>-->
+<!--        <div class="table-responsive">-->
+<!--            <table class="table table-hover align-middle">-->
+<!--                <thead class="table-dark">-->
+<!--                <tr>-->
+<!--                    <th>Booking ID</th>-->
+<!--                    <th>Customer ID</th>-->
+<!--                    <th>Technician ID</th>-->
+<!--                    <th>Service ID</th>-->
+<!--                    <th>Booking Date</th>-->
+<!--                    <th>Booking Time</th>-->
+<!--                    <th>Mobile Number</th>-->
+<!--&lt;!&ndash;                    <th>Actions</th>&ndash;&gt;-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody id="bookingsTable">-->
+<!--                &lt;!&ndash; Booking rows will be inserted dynamically &ndash;&gt;-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Response Message &ndash;&gt;-->
+<!--    <div id="responseMessage" class="mt-3 text-center fw-bold"></div>-->
+<!--</div>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>-->
+<!--<script>-->
+<!--    let token = localStorage.getItem("authToken");-->
+
+<!--    // Function to fetch all bookings-->
+<!--    function fetchAllBookings() {-->
+<!--        fetch("http://localhost:8080/api/v1/booking/getAll", {-->
+<!--            method: 'GET',-->
+<!--            headers: {-->
+<!--                'Authorization': `Bearer ` + token-->
+<!--            }-->
+<!--        })-->
+<!--            .then(response => response.json())-->
+<!--            .then(data => {-->
+<!--                const tableBody = document.getElementById("bookingsTable");-->
+<!--                tableBody.innerHTML = "";-->
+<!--                data.forEach(booking => {-->
+<!--                    const row = document.createElement("tr");-->
+<!--                    row.innerHTML = `-->
+<!--                    <td>${booking.bookingId}</td>-->
+<!--                    <td>${booking.customerId}</td>-->
+<!--                    <td>${booking.technicianId || "N/A"}</td>-->
+<!--                    <td>${booking.serviceId}</td>-->
+<!--                    <td>${booking.bookingDate}</td>-->
+<!--                    <td>${booking.bookingTime}</td>-->
+<!--                    <td>${booking.mobileNumber}</td>-->
+<!--                `;-->
+
+<!--                    // Add event listener to populate form when a row is clicked-->
+<!--                    row.addEventListener("click", () => populateForm(booking));-->
+
+<!--                    tableBody.appendChild(row);-->
+<!--                });-->
+<!--            })-->
+<!--            .catch(error => console.error("Error fetching bookings:", error));-->
+<!--    }-->
+
+<!--    // Function to populate the form fields with the clicked row data-->
+<!--    function populateForm(booking) {-->
+<!--        document.getElementById("updateBookingId").value = booking.bookingId;-->
+<!--        document.getElementById("updateCustomerId").value = booking.customerId;-->
+<!--        document.getElementById("updateTechnicianId").value = booking.technicianId || "";-->
+<!--        document.getElementById("updateServiceId").value = booking.serviceId;-->
+<!--        document.getElementById("updateBookingDate").value = booking.bookingDate;-->
+<!--        document.getElementById("updateBookingTime").value = booking.bookingTime.slice(0, 5); // Extract HH:mm-->
+<!--        document.getElementById("updateMobileNumber").value = booking.mobileNumber;-->
+<!--    }-->
+
+<!--    // Function to update booking-->
+<!--    function updateBooking() {-->
+<!--        const bookingData = {-->
+<!--            bookingId: parseInt(document.getElementById("updateBookingId").value),-->
+<!--            customerId: parseInt(document.getElementById("updateCustomerId").value),-->
+<!--            technicianId: document.getElementById("updateTechnicianId").value-->
+<!--                ? parseInt(document.getElementById("updateTechnicianId").value)-->
+<!--                : null,-->
+<!--            serviceId: parseInt(document.getElementById("updateServiceId").value),-->
+<!--            bookingDate: document.getElementById("updateBookingDate").value,-->
+<!--            bookingTime: document.getElementById("updateBookingTime").value + ":00",-->
+<!--            mobileNumber: document.getElementById("updateMobileNumber").value,-->
+<!--        };-->
+
+<!--        Swal.fire({-->
+<!--            title: "Do you want to save the changes?",-->
+<!--            showDenyButton: true,-->
+<!--            showCancelButton: true,-->
+<!--            confirmButtonText: "Save",-->
+<!--            denyButtonText: `Don't save`,-->
+<!--        }).then((result) => {-->
+<!--            if (result.isConfirmed) {-->
+<!--                fetch("http://localhost:8080/api/v1/booking/update", {-->
+<!--                    method: "PUT",-->
+<!--                    headers: {-->
+<!--                        "Content-Type": "application/json",-->
+<!--                        Authorization: "Bearer " + token,-->
+<!--                    },-->
+<!--                    body: JSON.stringify(bookingData),-->
+<!--                })-->
+<!--                    .then((response) => response.text())-->
+<!--                    .then((result) => {-->
+<!--                        Swal.fire("Saved!", "Your booking has been updated.", "success");-->
+<!--                        document.getElementById("responseMessage").innerText = result;-->
+<!--                        fetchAllBookings(); // Refresh table after update-->
+<!--                    })-->
+<!--                    .catch((error) => {-->
+<!--                        console.error("Error updating booking:", error);-->
+<!--                        Swal.fire("Error!", "Failed to update booking.", "error");-->
+<!--                    });-->
+<!--            } else if (result.isDenied) {-->
+<!--                Swal.fire("Changes are not saved", "", "info");-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+
+<!--    // Function to send booking email-->
+<!--    function sendBookingEmail() {-->
+<!--        const emailData = {-->
+<!--            to: document.getElementById("updateCustomerEmail").value,-->
+<!--            subject: "Booking Confirmation - Hybrid Hub",-->
+<!--            body: document.getElementById("emailMessage").value,-->
+<!--        };-->
+
+<!--        fetch("http://localhost:8080/api/v1/email/send", {-->
+<!--            method: "POST",-->
+<!--            headers: {-->
+<!--                "Content-Type": "application/json",-->
+<!--                Authorization: "Bearer " + token,-->
+<!--            },-->
+<!--            body: JSON.stringify(emailData),-->
+<!--        })-->
+<!--            .then((response) => response.text())-->
+<!--            .then((result) => {-->
+<!--                document.getElementById("responseMessage").innerText = result;-->
+
+<!--                let timerInterval;-->
+<!--                Swal.fire({-->
+<!--                    title: "Email Sent!",-->
+<!--                    html: "This alert will close in <b></b> milliseconds.",-->
+<!--                    timer: 2000,-->
+<!--                    timerProgressBar: true,-->
+<!--                    icon: "success",-->
+<!--                    didOpen: () => {-->
+<!--                        Swal.showLoading();-->
+<!--                        const timer = Swal.getPopup().querySelector("b");-->
+<!--                        timerInterval = setInterval(() => {-->
+<!--                            timer.textContent = `${Swal.getTimerLeft()}`;-->
+<!--                        }, 100);-->
+<!--                    },-->
+<!--                    willClose: () => {-->
+<!--                        clearInterval(timerInterval);-->
+<!--                    },-->
+<!--                }).then((result) => {-->
+<!--                    if (result.dismiss === Swal.DismissReason.timer) {-->
+<!--                        console.log("Email confirmation closed automatically.");-->
+<!--                    }-->
+<!--                });-->
+<!--            })-->
+<!--            .catch((error) => {-->
+<!--                console.error("Error sending email:", error);-->
+<!--                document.getElementById("responseMessage").innerText = "Failed to send email";-->
+<!--                Swal.fire("Error!", "Failed to send email. Please try again.", "error");-->
+<!--            });-->
+<!--    }-->
+
+
+<!--    // Load all bookings on page load-->
+<!--    window.onload = fetchAllBookings;-->
+
+
+<!--    // Function to populate the form fields with the clicked row data-->
+<!--    function populateForm(booking) {-->
+<!--        document.getElementById("updateBookingId").value = booking.bookingId;-->
+<!--        document.getElementById("updateCustomerId").value = booking.customerId;-->
+<!--        document.getElementById("updateTechnicianId").value = booking.technicianId || "";-->
+<!--        document.getElementById("updateServiceId").value = booking.serviceId;-->
+<!--        document.getElementById("updateBookingDate").value = booking.bookingDate;-->
+<!--        document.getElementById("updateBookingTime").value = booking.bookingTime.slice(0, 5); // Extract HH:mm-->
+<!--        document.getElementById("updateMobileNumber").value = booking.mobileNumber;-->
+
+<!--        // Fetch and populate customer email-->
+<!--        fetch(`http://localhost:8080/api/v1/user/getEmailByCustomerId/${booking.customerId}`, {-->
+<!--            method: 'GET',-->
+<!--            headers: {-->
+<!--                'Authorization': `Bearer ` + token-->
+<!--            }-->
+<!--        })-->
+<!--            .then(response => response.text())-->
+<!--            .then(email => {-->
+<!--                document.getElementById("updateCustomerEmail").value = email || "Email not found";-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                console.error("Error fetching customer email:", error);-->
+<!--                document.getElementById("updateCustomerEmail").value = ""; // Clear email if fetch fails-->
+<!--            });-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
