@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="19fea163-9b43-4b47-a99b-97abfff159fb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/repo/PaymentRepo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/img/new2.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/controller/PaymentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/dto/PaymentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/dto/PaymentDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/dto/PaymentDetailsDTO.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/entity/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/entity/Payment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/repo/BookingRepo.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/repo/BookingRepo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/repo/PaymentRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/service/PaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/BackEnd/src/main/java/org/example/backend/service/PaymentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/Admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/Admin.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/ServiceManagement.html" beforeDir="false" afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/ServiceManagement.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/TechnicianManagement.html" beforeDir="false" afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/TechnicianManagement.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/payment.html" beforeDir="false" afterPath="$PROJECT_DIR$/carserv-1.0.0/carserv-1.0.0/payment.html" afterDir="false" />
-    </list>
+    <list default="true" id="19fea163-9b43-4b47-a99b-97abfff159fb" name="Changes" comment="Second commit of payments" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -156,7 +140,17 @@
       <workItem from="1744343152815" duration="2858000" />
       <workItem from="1744424202412" duration="10236000" />
       <workItem from="1744509368019" duration="2660000" />
+      <workItem from="1744533034389" duration="193000" />
     </task>
+    <task id="LOCAL-00001" summary="Second commit of payments">
+      <option name="closed" value="true" />
+      <created>1744533139716</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744533139716</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -164,6 +158,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Second commit of payments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Second commit of payments" />
   </component>
 </project>
