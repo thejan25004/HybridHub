@@ -2,861 +2,1122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Management</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="sweetalert2.min.css">
     <style>
-        .dashboard-card {
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: 0.3s;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            margin-bottom: 20px;
         }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
+        .card-header {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-radius: 10px 10px 0 0 !important;
         }
-        .status-pending {
-            background-color: #FFF3CD;
-            color: #856404;
+        .payment-status-pending {
+            color: #fd7e14;
         }
-        .status-completed {
-            background-color: #D4EDDA;
-            color: #155724;
+        .payment-status-completed {
+            color: #198754;
         }
-        .status-failed {
-            background-color: #F8D7DA;
-            color: #721C24;
+        .payment-status-failed {
+            color: #dc3545;
         }
-        .method-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
+        .summary-card {
+            border-left: 4px solid #0d6efd;
         }
-        .method-credit {
-            background-color: #CCE5FF;
-            color: #004085;
+        .chart-container {
+            height: 300px;
         }
-        .method-cash {
-            background-color: #E2E3E5;
-            color: #383d41;
+        .action-btn {
+            margin-right: 5px;
         }
-        .method-online {
-            background-color: #D1ECF1;
-            color: #0c5460;
+        .form-label {
+            font-weight: 500;
+        }
+        .pagination {
+            justify-content: center;
         }
     </style>
 </head>
 <body>
 
-<div class="container my-5">
-    <h2 class="text-center fw-bold mb-4">💵 Payment Management</h2>
 
-    <!-- Payment Stats Dashboard -->
+<div class="dashboard-container mt-4">
     <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card dashboard-card bg-primary text-white mb-3">
+        <div class="col">
+            <h2><i class="fas fa-credit-card me-2"></i>Payment Management</h2>
+            <p class="text-muted">Manage all payment transactions for service bookings</p>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                <i class="fas fa-plus me-1"></i> New Payment
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card summary-card h-100">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Total Revenue</h6>
-                            <h3 class="card-text" id="totalRevenue">$0.00</h3>
-                        </div>
-                        <i class="fas fa-dollar-sign fa-3x opacity-50"></i>
-                    </div>
+                    <h5 class="card-title">Total Payments</h5>
+                    <h2 class="mt-3 mb-3" id="totalPayments">0</h2>
+                    <p class="text-muted">Overall payment transactions</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card dashboard-card bg-success text-white mb-3">
+        <div class="col-md-3">
+            <div class="card summary-card h-100" style="border-left-color: #198754;">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Completed Payments</h6>
-                            <h3 class="card-text" id="completedPayments">0</h3>
-                        </div>
-                        <i class="fas fa-check-circle fa-3x opacity-50"></i>
-                    </div>
+                    <h5 class="card-title">Completed</h5>
+                    <h2 class="mt-3 mb-3 text-success" id="completedPayments">0</h2>
+                    <p class="text-muted">Successfully processed payments</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card dashboard-card bg-warning text-white mb-3">
+        <div class="col-md-3">
+            <div class="card summary-card h-100" style="border-left-color: #fd7e14;">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title">Pending Payments</h6>
-                            <h3 class="card-text" id="pendingPayments">0</h3>
-                        </div>
-                        <i class="fas fa-clock fa-3x opacity-50"></i>
-                    </div>
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="mt-3 mb-3 text-warning" id="pendingPayments">0</h2>
+                    <p class="text-muted">Awaiting processing payments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card summary-card h-100" style="border-left-color: #dc3545;">
+                <div class="card-body">
+                    <h5 class="card-title">Failed</h5>
+                    <h2 class="mt-3 mb-3 text-danger" id="failedPayments">0</h2>
+                    <p class="text-muted">Unsuccessful payment attempts</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Payment Method Chart -->
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card dashboard-card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Monthly Revenue</h5>
+            <div class="card h-100">
+                <div class="card-header">
+                    Payment Methods Distribution
                 </div>
                 <div class="card-body">
-                    <canvas id="revenueChart" height="250"></canvas>
+                    <div class="chart-container">
+                        <canvas id="paymentMethodChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card dashboard-card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Payment Methods</h5>
+            <div class="card h-100">
+                <div class="card-header">
+                    Recent Activity
                 </div>
-                <div class="card-body">
-                    <canvas id="paymentMethodsChart" height="250"></canvas>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush" id="recentActivityList">
+                        <li class="list-group-item text-center text-muted">Loading recent activity...</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Payment Search Section -->
-    <div class="card shadow p-4 mb-4">
-        <h4 class="text-primary">🔍 Payment Search</h4>
-        <div class="row align-items-end mb-3">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label for="searchType">Search By</label>
-                    <select id="searchType" class="form-control">
-                        <option value="payment">Payment ID</option>
-                        <option value="booking">Booking ID</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="searchId">ID Number</label>
-                    <input type="number" id="searchId" class="form-control" placeholder="Enter ID">
-                </div>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-primary btn-block" onclick="searchPayment()">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Payment Details Card -->
-    <div id="paymentDetailsCard" class="card shadow mb-4" style="display: none;">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0">Payment Details</h5>
-        </div>
+    <!-- Search and Filter -->
+    <div class="card mb-4">
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="mb-3">💰 Payment Information</h6>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th width="40%">Payment ID</th>
-                            <td id="detailPaymentId"></td>
-                        </tr>
-                        <tr>
-                            <th>Payment Date</th>
-                            <td id="detailPaymentDate"></td>
-                        </tr>
-                        <tr>
-                            <th>Amount</th>
-                            <td id="detailAmount"></td>
-                        </tr>
-                        <tr>
-                            <th>Payment Method</th>
-                            <td id="detailPaymentMethod"></td>
-                        </tr>
-                        <tr>
-                            <th>Status</th>
-                            <td id="detailStatus"></td>
-                        </tr>
-                    </table>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Search payments..." id="searchPayment">
                 </div>
-                <div class="col-md-6">
-                    <h6 class="mb-3">📅 Booking Information</h6>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th width="40%">Booking ID</th>
-                            <td id="detailBookingId"></td>
-                        </tr>
-                        <tr>
-                            <th>Customer</th>
-                            <td id="detailCustomerName"></td>
-                        </tr>
-                        <tr>
-                            <th>Service</th>
-                            <td id="detailServiceName"></td>
-                        </tr>
-                        <tr>
-                            <th>Booking Date</th>
-                            <td id="detailBookingDate"></td>
-                        </tr>
-                        <tr>
-                            <th>Technician</th>
-                            <td id="detailTechnicianName"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Status Update Section -->
-            <div class="mt-3 p-3 bg-light rounded">
-                <h6>Update Payment Status</h6>
-                <div class="d-flex">
-                    <select id="updateStatus" class="form-control mr-2">
-                        <option value="PENDING">Pending</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="FAILED">Failed</option>
+                <div class="col-md-2">
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Failed">Failed</option>
                     </select>
-                    <button class="btn btn-primary" onclick="updatePaymentStatus()">
-                        <i class="fas fa-save"></i> Update Status
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" id="methodFilter">
+                        <option value="">All Methods</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Online">Online</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="dateFilter">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" id="resetFilters">
+                        <i class="fas fa-undo me-1"></i> Reset
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- New Payment Form -->
-    <div class="card shadow p-4 mb-4">
-        <h4 class="text-primary">💳 Create New Payment</h4>
-        <form id="newPaymentForm">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="bookingId">Booking ID</label>
-                        <input type="number" id="bookingId" class="form-control" required>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="amount">Amount ($)</label>
-                        <input type="number" id="amount" class="form-control" step="0.01" required>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="paymentMethod">Payment Method</label>
-                        <select id="paymentMethod" class="form-control" required>
-                            <option value="CREDIT_CARD">Credit Card</option>
-                            <option value="CASH">Cash</option>
-                            <option value="ONLINE">Online</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="paymentStatus">Payment Status</label>
-                        <select id="paymentStatus" class="form-control" required>
-                            <option value="PENDING">Pending</option>
-                            <option value="COMPLETED">Completed</option>
-                            <option value="FAILED">Failed</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="text-right mt-3">
-                <button type="button" class="btn btn-lg btn-primary" onclick="createPayment()">
-                    <i class="fas fa-plus-circle"></i> Create Payment
+    <!-- Payments Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Payment Transactions</span>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary me-1" id="refreshBtn">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" id="exportBtn">
+                    <i class="fas fa-file-export me-1"></i> Export
                 </button>
             </div>
-        </form>
-    </div>
-
-    <!-- All Payments Table -->
-    <div class="card shadow p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="text-primary mb-0">📋 All Payments</h4>
-            <div class="btn-group">
-                <button class="btn btn-outline-primary" onclick="loadAllPayments()">All</button>
-                <button class="btn btn-outline-warning" onclick="loadPendingPayments()">Pending</button>
-                <button class="btn btn-outline-success" onclick="loadRecentPayments()">Recent</button>
-            </div>
         </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-dark">
+        <div class="card-body table-responsive">
+            <table class="table table-hover">
+                <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Booking ID</th>
                     <th>Date</th>
-                    <th>Customer</th>
-                    <th>Service</th>
                     <th>Amount</th>
                     <th>Method</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
-                <tbody id="paymentsTable">
-                <!-- Payment rows will be inserted dynamically -->
+                <tbody id="paymentsTableBody">
+                <tr>
+                    <td colspan="7" class="text-center">Loading payments...</td>
+                </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination" id="paymentPagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
 
+<!-- Add Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPaymentForm">
+                    <div class="mb-3">
+                        <label for="bookingId" class="form-label">Booking ID</label>
+                        <select class="form-select" id="bookingId" required>
+                            <option value="">Select Booking</option>
+                            <!-- Bookings will be loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="amount" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select" id="paymentMethod" required>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentStatus" class="form-label">Payment Status</label>
+                        <select class="form-select" id="paymentStatus" required>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="savePaymentBtn">Save Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Payment Modal -->
+<div class="modal fade" id="editPaymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPaymentForm">
+                    <input type="hidden" id="editPaymentId">
+                    <div class="mb-3">
+                        <label for="editBookingId" class="form-label">Booking ID</label>
+                        <select class="form-select" id="editBookingId" required>
+                            <option value="">Select Booking</option>
+                            <!-- Bookings will be loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAmount" class="form-label">Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="editAmount" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPaymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select" id="editPaymentMethod" required>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Online">Online</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPaymentStatus" class="form-label">Payment Status</label>
+                        <select class="form-select" id="editPaymentStatus" required>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Failed">Failed</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="updatePaymentBtn">Update Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Details Modal -->
+<div class="modal fade" id="paymentDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Payment Information</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td class="text-muted">Payment ID:</td>
+                                <td id="detailPaymentId"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Date & Time:</td>
+                                <td id="detailPaymentDate"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Amount:</td>
+                                <td id="detailAmount"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Method:</td>
+                                <td id="detailPaymentMethod"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Status:</td>
+                                <td id="detailPaymentStatus"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold">Booking Information</h6>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td class="text-muted">Booking ID:</td>
+                                <td id="detailBookingId"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Service:</td>
+                                <td id="detailService"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Customer:</td>
+                                <td id="detailCustomer"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Vehicle:</td>
+                                <td id="detailVehicle"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Date:</td>
+                                <td id="detailBookingDate"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-primary" id="printReceiptBtn">
+                        <i class="fas fa-print me-1"></i> Print Receipt
+                    </button>
+                    <div>
+                        <button type="button" class="btn btn-outline-danger me-2" id="deletePaymentDetailBtn">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                        <button type="button" class="btn btn-primary" id="editPaymentDetailBtn">
+                            <i class="fas fa-edit me-1"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this payment? This action cannot be undone.</p>
+                <input type="hidden" id="deletePaymentId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+    <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Operation successful.
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
 <script>
+    // Base API URL
+    const API_BASE_URL = 'http://localhost:8080/api/v1';
+    let allPayments = [];
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let paymentMethodChart = null;
+
     let token = localStorage.getItem("authToken");
-    let revenueChart, paymentMethodsChart;
 
-    // On page load
-    window.onload = function() {
-        loadAllPayments();
-        loadDashboardStats();
-        initializeCharts();
-    };
+    // Initialize page
+    $(document).ready(function() {
+        loadPayments();
+        loadBookings();
+        loadPaymentSummary();
+        loadPaymentMethodStats();
+        setupEventListeners();
+    });
 
-    // Initialize charts
-    function initializeCharts() {
-        // Revenue Chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        revenueChart = new Chart(revenueCtx, {
-            type: 'bar',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Monthly Revenue ($)',
-                    data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
-                    }
-                }
-            }
+    // Setup event listeners
+    function setupEventListeners() {
+        // Save payment
+        $('#savePaymentBtn').click(savePayment);
+
+        // Update payment
+        $('#updatePaymentBtn').click(updatePayment);
+
+        // Confirm delete
+        $('#confirmDeleteBtn').click(deletePayment);
+
+        // Detail buttons action
+        $('#editPaymentDetailBtn').click(function() {
+            const paymentId = $('#detailPaymentId').text();
+            prepareEditPayment(paymentId);
+            $('#paymentDetailsModal').modal('hide');
+            $('#editPaymentModal').modal('show');
         });
 
-        // Payment Methods Chart
-        const methodsCtx = document.getElementById('paymentMethodsChart').getContext('2d');
-        paymentMethodsChart = new Chart(methodsCtx, {
-            type: 'doughnut',
-            data: {
-                labels: [],
-                datasets: [{
-                    data: [],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(255, 206, 86, 0.7)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'right',
-                    }
-                }
-            }
+        $('#deletePaymentDetailBtn').click(function() {
+            const paymentId = $('#detailPaymentId').text();
+            $('#deletePaymentId').val(paymentId);
+            $('#paymentDetailsModal').modal('hide');
+            $('#deleteConfirmModal').modal('show');
         });
 
-        // Load chart data
-        loadChartData();
+        // Print receipt
+        $('#printReceiptBtn').click(printReceipt);
+
+        // Search and filters
+        $('#searchPayment').on('input', applyFilters);
+        $('#statusFilter').change(applyFilters);
+        $('#methodFilter').change(applyFilters);
+        $('#dateFilter').change(applyFilters);
+        $('#resetFilters').click(resetFilters);
+
+        // Refresh button
+        $('#refreshBtn').click(function() {
+            loadPayments();
+            loadPaymentSummary();
+            loadPaymentMethodStats();
+            showToast('Data Refreshed', 'Payment data has been refreshed successfully.');
+        });
+
+        // Export button
+        $('#exportBtn').click(exportPaymentsData);
     }
 
     // Load all payments
-    function loadAllPayments() {
-        // For development/demo purposes, if no token is available, use mock data
-        if (!token) {
-            renderMockPayments();
-            return;
-        }
-
-        fetch('/api/v1/payment/all', {
+    function loadPayments() {
+        $.ajax({
+            url: `${API_BASE_URL}/payment/getAll`,
+            type: "GET",
             headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                renderPaymentsTable(data);
-            })
-            .catch(error => {
+                "Authorization": "Bearer " + token
+            },
+            success: function(data) {
+                allPayments = data;
+                displayPayments(allPayments);
+                updatePagination();
+            },
+            error: function(xhr, status, error) {
                 console.error('Error loading payments:', error);
-                // Fallback to mock data if API fails
-                renderMockPayments();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Using demo data',
-                    text: 'Connected to demo mode since backend API is unavailable'
-                });
-            });
-    }
-
-    // Load pending payments
-    function loadPendingPayments() {
-        if (!token) {
-            renderMockPayments('PENDING');
-            return;
-        }
-
-        fetch('/api/v1/payment/pending', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+                showToast('Error', 'Failed to load payments. Please try again.', 'error');
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                renderPaymentsTable(data);
-            })
-            .catch(error => {
-                console.error('Error loading pending payments:', error);
-                renderMockPayments('PENDING');
-            });
-    }
-
-    // Load recent payments (last 7 days)
-    function loadRecentPayments() {
-        if (!token) {
-            renderMockPayments('RECENT');
-            return;
-        }
-
-        fetch('/api/v1/payment/recent', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                renderPaymentsTable(data);
-            })
-            .catch(error => {
-                console.error('Error loading recent payments:', error);
-                renderMockPayments('RECENT');
-            });
-    }
-
-    // Render payments table
-    function renderPaymentsTable(payments) {
-        const tableBody = document.getElementById('paymentsTable');
-        tableBody.innerHTML = '';
-
-        if (payments.length === 0) {
-            tableBody.innerHTML = `
-            <tr>
-                <td colspan="8" class="text-center py-4">No payments found</td>
-            </tr>
-        `;
-            return;
-        }
-
-        payments.forEach(payment => {
-            const row = document.createElement('tr');
-
-            // Format date
-            const paymentDate = new Date(payment.paymentDate);
-            const formattedDate = paymentDate.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-
-            // Format amount
-            const formattedAmount = parseFloat(payment.amount).toFixed(2);
-
-            // Determine status badge class
-            let statusClass = '';
-            switch (payment.paymentStatus) {
-                case 'Pending':
-                    statusClass = 'status-pending';
-                    break;
-                case 'Completed':
-                    statusClass = 'status-completed';
-                    break;
-                case 'Failed':
-                    statusClass = 'status-failed';
-                    break;
-            }
-
-            // Determine method badge class
-            let methodClass = '';
-            switch (payment.paymentMethod) {
-                case 'Credit Card':
-                    methodClass = 'method-credit';
-                    break;
-                case 'Cash':
-                    methodClass = 'method-cash';
-                    break;
-                case 'Online':
-                    methodClass = 'method-online';
-                    break;
-            }
-
-            row.innerHTML = `
-            <td>#${payment.paymentId}</td>
-            <td>${formattedDate}</td>
-            <td>${payment.customerName || 'N/A'}</td>
-            <td>${payment.serviceName || 'N/A'}</td>
-            <td>$${formattedAmount}</td>
-            <td><span class="method-badge ${methodClass}">${payment.paymentMethod}</span></td>
-            <td><span class="status-badge ${statusClass}">${payment.paymentStatus}</span></td>
-            <td>
-                <button class="btn btn-sm btn-info" onclick="viewPaymentDetails(${payment.paymentId})">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </td>
-        `;
-
-            tableBody.appendChild(row);
         });
     }
 
-    // Load dashboard stats
-    function loadDashboardStats() {
-        // Load total revenue
-        fetch('/api/v1/payment/statistics/total-revenue', {
+    // Load bookings for dropdown
+    function loadBookings() {
+        $.ajax({
+            url: `${API_BASE_URL}/booking/getAll`,
+            type: "GET",
             headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('totalRevenue').textContent = `$${parseFloat(data).toFixed(2)}`;
-            })
-            .catch(error => {
-                console.error('Error loading total revenue:', error);
-            });
+                "Authorization": "Bearer " + token
+            },
+            success: function(data) {
+                const bookingIdSelect = $('#bookingId');
+                const editBookingIdSelect = $('#editBookingId');
 
-        // Count completed payments
-        fetch('/api/v1/payment/all', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                const completed = data.filter(payment => payment.paymentStatus === 'Completed').length;
-                document.getElementById('completedPayments').textContent = completed;
-            })
-            .catch(error => {
-                console.error('Error counting completed payments:', error);
-            });
+                // Clear existing options
+                bookingIdSelect.html('<option value="">Select Booking</option>');
+                editBookingIdSelect.html('<option value="">Select Booking</option>');
 
-        // Load pending payments count
-        fetch('/api/v1/payment/pending', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+                // Add new options
+                data.forEach(booking => {
+                    const option = `<option value="${booking.bookingId}">Booking #${booking.bookingId} - ${new Date(booking.bookingDate).toLocaleDateString()}</option>`;
+                    bookingIdSelect.append(option);
+                    editBookingIdSelect.append(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading bookings:', error);
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('pendingPayments').textContent = data.length;
-            })
-            .catch(error => {
-                console.error('Error loading pending payments count:', error);
-            });
+        });
     }
 
-    // Load chart data
-    function loadChartData() {
-        // Load monthly revenue data
-        fetch('/api/v1/payment/statistics/monthly-revenue', {
+    // Load payment summary statistics
+    function loadPaymentSummary() {
+        $.ajax({
+            url: `${API_BASE_URL}/payment/summary`,
+            type: "GET",
             headers: {
-                'Authorization': `Bearer ${token}`
+                "Authorization": "Bearer " + token
+            },
+            success: function(data) {
+                $('#totalPayments').text(data.totalPayments);
+                $('#completedPayments').text(data.completedPayments);
+                $('#pendingPayments').text(data.pendingPayments);
+                $('#failedPayments').text(data.failedPayments);
+
+                // Load recent activity
+                loadRecentActivity();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading payment summary:', error);
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                const months = Object.keys(data);
-                const revenues = Object.values(data);
-
-                // Update revenue chart
-                revenueChart.data.labels = months;
-                revenueChart.data.datasets[0].data = revenues;
-                revenueChart.update();
-            })
-            .catch(error => {
-                console.error('Error loading monthly revenue data:', error);
-            });
-
-        // Load payment methods data
-        fetch('/api/v1/payment/statistics/payment-methods', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                const methods = Object.keys(data);
-                const counts = Object.values(data);
-
-                // Update payment methods chart
-                paymentMethodsChart.data.labels = methods;
-                paymentMethodsChart.data.datasets[0].data = counts;
-                paymentMethodsChart.update();
-            })
-            .catch(error => {
-                console.error('Error loading payment methods data:', error);
-            });
+        });
     }
 
-    // Search payment
-    function searchPayment() {
-        const searchType = document.getElementById('searchType').value;
-        const searchId = document.getElementById('searchId').value;
+    // Load recent activity for the recent activity list
+    function loadRecentActivity() {
+        // This could be a separate endpoint or we can use the most recent payments
+        if (allPayments.length > 0) {
+            const recentPayments = [...allPayments].sort((a, b) =>
+                new Date(b.paymentDate) - new Date(a.paymentDate)).slice(0, 5);
 
-        if (!searchId) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'ID Required',
-                text: 'Please enter an ID to search'
+            const activityList = $('#recentActivityList');
+            activityList.empty();
+
+            recentPayments.forEach(payment => {
+                const date = new Date(payment.paymentDate);
+                const formattedDate = date.toLocaleDateString() + ' ' +
+                    date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                let statusIcon = 'fa-clock text-warning';
+                if (payment.paymentStatus === 'Completed') {
+                    statusIcon = 'fa-check-circle text-success';
+                } else if (payment.paymentStatus === 'Failed') {
+                    statusIcon = 'fa-times-circle text-danger';
+                }
+
+                const listItem = `
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Payment #${payment.paymentId}</h6>
+                            <small>${formattedDate}</small>
+                        </div>
+                        <p class="mb-1">
+                            <i class="fas ${statusIcon} me-1"></i>
+                            ${payment.paymentStatus} payment of $${payment.amount.toFixed(2)} via ${payment.paymentMethod}
+                        </p>
+                        <small class="text-muted">For Booking #${payment.bookingId}</small>
+                    </li>
+                `;
+                activityList.append(listItem);
             });
+        } else {
+            $('#recentActivityList').html('<li class="list-group-item text-center">No recent activity</li>');
+        }
+    }
+
+    // Load payment method statistics for chart
+    function loadPaymentMethodStats() {
+        $.ajax({
+            url: `${API_BASE_URL}/payment/method-stats`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(data) {
+                renderPaymentMethodChart(data);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading payment method stats:', error);
+            }
+        });
+    }
+
+    // Render chart for payment methods
+    function renderPaymentMethodChart(data) {
+        const ctx = document.getElementById('paymentMethodChart').getContext('2d');
+
+        // Destroy existing chart if any
+        if (paymentMethodChart) {
+            paymentMethodChart.destroy();
+        }
+
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        // Generate random colors
+        const backgroundColors = labels.map((_, i) => {
+            const colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+            return colors[i % colors.length];
+        });
+
+        paymentMethodChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: backgroundColors,
+                    hoverBackgroundColor: backgroundColors.map(color => {
+                        return color.replace(')', ', 0.8)').replace('rgb', 'rgba');
+                    }),
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                cutoutPercentage: 70,
+            },
+        });
+    }
+
+    // Display payments in table (continuation of the function)
+    function displayPayments(payments) {
+        const tableBody = $('#paymentsTableBody');
+        tableBody.empty();
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paymentsToShow = payments.slice(startIndex, endIndex);
+
+        if (paymentsToShow.length === 0) {
+            tableBody.html(`
+            <tr>
+                <td colspan="7" class="text-center">No payments found</td>
+            </tr>
+        `);
             return;
         }
 
-        let endpoint;
-        if (searchType === 'payment') {
-            endpoint = `/api/v1/payment/details/${searchId}`;
-        } else {
-            endpoint = `/api/v1/payment/booking/${searchId}`;
-        }
+        paymentsToShow.forEach(payment => {
+            const date = new Date(payment.paymentDate);
+            const formattedDate = date.toLocaleDateString();
 
-        fetch(endpoint, {
-            headers: {
-                'Authorization': `Bearer ${token}`
+            let statusClass = '';
+            if (payment.paymentStatus === 'Completed') {
+                statusClass = 'payment-status-completed';
+            } else if (payment.paymentStatus === 'Pending') {
+                statusClass = 'payment-status-pending';
+            } else if (payment.paymentStatus === 'Failed') {
+                statusClass = 'payment-status-failed';
             }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Payment not found');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (searchType === 'payment') {
-                    displayPaymentDetails(data);
-                } else {
-                    // If searching by booking ID, we may get multiple payments
-                    if (data.length === 0) {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'No Payments Found',
-                            text: `No payments found for booking #${searchId}`
-                        });
-                    } else if (data.length === 1) {
-                        // If only one payment, fetch its details
-                        return fetch(`/api/v1/payment/details/${data[0].paymentId}`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`
-                            }
-                        }).then(resp => resp.json());
-                    } else {
-                        // If multiple payments, render them in the table
-                        renderPaymentsTable(data);
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Payments Found',
-                            text: `Found ${data.length} payments for booking #${searchId}`
-                        });
-                    }
-                }
-            })
-            .then(details => {
-                if (details) {
-                    displayPaymentDetails(details);
-                }
-            })
-            .catch(error => {
-                console.error('Error searching payment:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Not Found',
-                    text: 'Please check the ID and try again'
-                });
-            });
+
+            const row = `
+            <tr>
+                <td>${payment.paymentId}</td>
+                <td>${payment.bookingId}</td>
+                <td>${formattedDate}</td>
+                <td>$${payment.amount.toFixed(2)}</td>
+                <td>${payment.paymentMethod}</td>
+                <td><span class="${statusClass}">${payment.paymentStatus}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary action-btn" onclick="viewPaymentDetails('${payment.paymentId}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning action-btn" onclick="prepareEditPayment('${payment.paymentId}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger action-btn" onclick="prepareDeletePayment('${payment.paymentId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+            tableBody.append(row);
+        });
     }
 
-    // Display payment details
-    function displayPaymentDetails(details) {
-        // Show the details card
-        document.getElementById('paymentDetailsCard').style.display = 'block';
+    // Update pagination based on filtered payments
+    function updatePagination() {
+        const totalPages = Math.ceil(allPayments.length / itemsPerPage);
+        const pagination = $('#paymentPagination');
+        pagination.empty();
 
-        // Payment information
-        document.getElementById('detailPaymentId').textContent = details.payment.paymentId;
-        document.getElementById('detailPaymentDate').textContent = new Date(details.payment.paymentDate).toLocaleString();
-        document.getElementById('detailAmount').textContent = `$${parseFloat(details.payment.amount).toFixed(2)}`;
-        document.getElementById('detailPaymentMethod').textContent = details.payment.paymentMethod;
-        document.getElementById('detailStatus').textContent = details.payment.paymentStatus;
+        // Previous button
+        const prevBtn = `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">Previous</a>
+        </li>
+    `;
+        pagination.append(prevBtn);
 
-        // Booking information
-        document.getElementById('detailBookingId').textContent = details.booking.bookingId;
-        document.getElementById('detailCustomerName').textContent = details.customer.user.name;
-        document.getElementById('detailServiceName').textContent = details.service.serviceName;
-        document.getElementById('detailBookingDate').textContent = new Date(details.booking.bookingDate).toLocaleString();
-        document.getElementById('detailTechnicianName').textContent = details.technician.user.name;
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = `
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                <a class="page-link" href="#" onclick="changePage(${i}); return false;">${i}</a>
+            </li>
+        `;
+            pagination.append(pageBtn);
+        }
 
-        // Set the current status in the dropdown
-        document.getElementById('updateStatus').value = details.payment.paymentStatus.replace(' ', '_').toUpperCase();
+        // Next button
+        const nextBtn = `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage + 1}); return false;">Next</a>
+        </li>
+    `;
+        pagination.append(nextBtn);
+    }
 
-        // Scroll to the details card
-        document.getElementById('paymentDetailsCard').scrollIntoView({ behavior: 'smooth' });
+    // Change current page
+    function changePage(page) {
+        currentPage = page;
+        displayPayments(allPayments);
     }
 
     // View payment details
     function viewPaymentDetails(paymentId) {
-        fetch(`/api/v1/payment/details/${paymentId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Payment details not found');
-                }
-                return response.json();
-            })
-            .then(data => {
-                displayPaymentDetails(data);
-            })
-            .catch(error => {
-                console.error('Error loading payment details:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to load payment details',
-                    text: 'Please try again later'
-                });
-            });
-    }
+        const payment = allPayments.find(p => p.paymentId == paymentId);
+        if (!payment) return;
 
-    // Update payment status
-    function updatePaymentStatus() {
-        const paymentId = document.getElementById('detailPaymentId').textContent;
-        const newStatus = document.getElementById('updateStatus').value;
+        // Set payment details
+        $('#detailPaymentId').text(payment.paymentId);
+        $('#detailPaymentDate').text(new Date(payment.paymentDate).toLocaleString());
+        $('#detailAmount').text(`$${payment.amount.toFixed(2)}`);
+        $('#detailPaymentMethod').text(payment.paymentMethod);
 
-        fetch(`/api/v1/payment/update-status/${paymentId}?status=${newStatus}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.text())
-            .then(message => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Status Updated',
-                    text: message
-                });
-
-                // Refresh payment details
-                viewPaymentDetails(paymentId);
-
-                // Refresh stats and table
-                loadDashboardStats();
-                loadAllPayments();
-                loadChartData();
-            })
-            .catch(error => {
-                console.error('Error updating payment status:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to update status',
-                    text: 'Please try again later'
-                });
-            });
-    }
-
-    // Create new payment
-    function createPayment() {
-        const bookingId = document.getElementById('bookingId').value;
-        const amount = document.getElementById('amount').value;
-        const paymentMethod = document.getElementById('paymentMethod').value;
-        const paymentStatus = document.getElementById('paymentStatus').value;
-
-        if (!bookingId || !amount) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Required Fields Missing',
-                text: 'Please fill in all required fields'
-            });
-            return;
+        let statusClass = '';
+        if (payment.paymentStatus === 'Completed') {
+            statusClass = 'text-success';
+        } else if (payment.paymentStatus === 'Pending') {
+            statusClass = 'text-warning';
+        } else if (payment.paymentStatus === 'Failed') {
+            statusClass = 'text-danger';
         }
 
+        $('#detailPaymentStatus').html(`<span class="${statusClass}">${payment.paymentStatus}</span>`);
+        $('#detailBookingId').text(payment.bookingId);
+
+        // Get booking details (this would ideally be part of the payment details API)
+        $.ajax({
+            url: `${API_BASE_URL}/booking/getById/${payment.bookingId}`,
+            type: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function(booking) {
+                $('#detailService').text(booking.serviceName || 'N/A');
+                $('#detailCustomer').text(booking.customerName || 'N/A');
+                $('#detailVehicle').text(booking.vehicleInfo || 'N/A');
+                $('#detailBookingDate').text(new Date(booking.bookingDate).toLocaleDateString());
+            },
+            error: function() {
+                $('#detailService').text('N/A');
+                $('#detailCustomer').text('N/A');
+                $('#detailVehicle').text('N/A');
+                $('#detailBookingDate').text('N/A');
+            }
+        });
+
+        // Show modal
+        $('#paymentDetailsModal').modal('show');
+    }
+
+    // Prepare edit payment
+    function prepareEditPayment(paymentId) {
+        const payment = allPayments.find(p => p.paymentId == paymentId);
+        if (!payment) return;
+
+        $('#editPaymentId').val(payment.paymentId);
+        $('#editBookingId').val(payment.bookingId);
+        $('#editAmount').val(payment.amount);
+        $('#editPaymentMethod').val(payment.paymentMethod);
+        $('#editPaymentStatus').val(payment.paymentStatus);
+
+        $('#editPaymentModal').modal('show');
+    }
+
+    // Save new payment
+    function savePayment() {
         const paymentData = {
-            bookingId: parseInt(bookingId),
-            amount: parseFloat(amount),
-            paymentMethod: paymentMethod,
-            paymentStatus: paymentStatus
+            bookingId: $('#bookingId').val(),
+            amount: parseFloat($('#amount').val()),
+            paymentMethod: $('#paymentMethod').val(),
+            paymentStatus: $('#paymentStatus').val(),
+            paymentDate: new Date()
         };
 
-        fetch('/api/v1/payment/create', {
-            method: 'POST',
+        $.ajax({
+            url: `${API_BASE_URL}/payment/save`,
+            type: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
             },
-            body: JSON.stringify(paymentData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to create payment');
-                }
-                return response.json();
-            })
-            .then(data => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Payment Created',
-                    text: `Payment #${data.paymentId} created successfully`
-                });
-
-                // Clear form
-                document.getElementById('bookingId').value = '';
-                document.getElementById('amount').value = '';
-
-                // Refresh data
-                loadAllPayments();
-                loadDashboardStats();
-                loadChartData();
-
-                // Show payment details
-                viewPaymentDetails(data.paymentId);
-            })
-            .catch(error => {
-                console.error('Error creating payment:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Failed to Create Payment',
-                    text: 'Please check the booking ID and try again'
-                });
-            });
+            data: JSON.stringify(paymentData),
+            success: function() {
+                $('#addPaymentModal').modal('hide');
+                $('#addPaymentForm')[0].reset();
+                loadPayments();
+                loadPaymentSummary();
+                loadPaymentMethodStats();
+                showToast('Success', 'Payment saved successfully.');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error saving payment:', error);
+                showToast('Error', 'Failed to save payment. Please try again.', 'error');
+            }
+        });
     }
+
+    // Update existing payment
+    function updatePayment() {
+        const paymentData = {
+            paymentId: $('#editPaymentId').val(),
+            bookingId: $('#editBookingId').val(),
+            amount: parseFloat($('#editAmount').val()),
+            paymentMethod: $('#editPaymentMethod').val(),
+            paymentStatus: $('#editPaymentStatus').val()
+        };
+
+        $.ajax({
+            url: `${API_BASE_URL}/payment/update`,
+            type: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            data: JSON.stringify(paymentData),
+            success: function() {
+                $('#editPaymentModal').modal('hide');
+                loadPayments();
+                loadPaymentSummary();
+                loadPaymentMethodStats();
+                showToast('Success', 'Payment updated successfully.');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating payment:', error);
+                showToast('Error', 'Failed to update payment. Please try again.', 'error');
+            }
+        });
+    }
+
+    // Prepare delete payment
+    function prepareDeletePayment(paymentId) {
+        $('#deletePaymentId').val(paymentId);
+        $('#deleteConfirmModal').modal('show');
+    }
+
+    // Delete payment
+    function deletePayment() {
+        const paymentId = $('#deletePaymentId').val();
+
+        $.ajax({
+            url: `${API_BASE_URL}/payment/delete/${paymentId}`,
+            type: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function() {
+                $('#deleteConfirmModal').modal('hide');
+                loadPayments();
+                loadPaymentSummary();
+                loadPaymentMethodStats();
+                showToast('Success', 'Payment deleted successfully.');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting payment:', error);
+                showToast('Error', 'Failed to delete payment. Please try again.', 'error');
+            }
+        });
+    }
+
+    // Apply filters to payments
+    function applyFilters() {
+        const searchTerm = $('#searchPayment').val().toLowerCase();
+        const statusFilter = $('#statusFilter').val();
+        const methodFilter = $('#methodFilter').val();
+        const dateFilter = $('#dateFilter').val();
+
+        let filteredPayments = [...allPayments];
+
+        // Apply search filter
+        if (searchTerm) {
+            filteredPayments = filteredPayments.filter(payment =>
+                payment.paymentId.toString().includes(searchTerm) ||
+                payment.bookingId.toString().includes(searchTerm) ||
+                payment.amount.toString().includes(searchTerm)
+            );
+        }
+
+        // Apply status filter
+        if (statusFilter) {
+            filteredPayments = filteredPayments.filter(payment =>
+                payment.paymentStatus === statusFilter
+            );
+        }
+
+        // Apply method filter
+        if (methodFilter) {
+            filteredPayments = filteredPayments.filter(payment =>
+                payment.paymentMethod === methodFilter
+            );
+        }
+
+        // Apply date filter
+        if (dateFilter) {
+            const filterDate = new Date(dateFilter);
+            filteredPayments = filteredPayments.filter(payment => {
+                const paymentDate = new Date(payment.paymentDate);
+                return paymentDate.toDateString() === filterDate.toDateString();
+            });
+        }
+
+        // Reset to first page and display filtered payments
+        currentPage = 1;
+        displayPayments(filteredPayments);
+        updatePagination();
+    }
+
+    // Reset all filters
+    function resetFilters() {
+        $('#searchPayment').val('');
+        $('#statusFilter').val('');
+        $('#methodFilter').val('');
+        $('#dateFilter').val('');
+
+        currentPage = 1;
+        displayPayments(allPayments);
+        updatePagination();
+    }
+
+    // Print receipt
+    function printReceipt() {
+        const paymentId = $('#detailPaymentId').text();
+        const payment = allPayments.find(p => p.paymentId == paymentId);
+
+        if (!payment) return;
+
+        const receiptContent = `
+        <html>
+        <head>
+            <title>Payment Receipt #${payment.paymentId}</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+                .header { text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+                .receipt-info { border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+                .footer { text-align: center; margin-top: 30px; font-size: 0.9em; color: #666; }
+                .total { font-weight: bold; font-size: 1.2em; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>Auto Service Center</h2>
+                <p>123 Service Road, Cityville • (555) 123-4567</p>
+            </div>
+            <div class="receipt-info">
+                <p><strong>Receipt #:</strong> ${payment.paymentId}</p>
+                <p><strong>Date:</strong> ${new Date(payment.paymentDate).toLocaleDateString()}</p>
+                <p><strong>Booking ID:</strong> ${payment.bookingId}</p>
+                <p><strong>Payment Method:</strong> ${payment.paymentMethod}</p>
+                <p><strong>Status:</strong> ${payment.paymentStatus}</p>
+            </div>
+            <table>
+                <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td>Auto Service (Booking #${payment.bookingId})</td>
+                    <td>$${payment.amount.toFixed(2)}</td>
+                </tr>
+                <tr class="total">
+                    <td>Total</td>
+                    <td>$${payment.amount.toFixed(2)}</td>
+                </tr>
+            </table>
+            <div class="footer">
+                <p>Thank you for your business!</p>
+                <p>This is computer generated receipt and requires no signature.</p>
+            </div>
+        </body>
+        </html>
+    `;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.open();
+        printWindow.document.write(receiptContent);
+        printWindow.document.close();
+
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    }
+
+    // Export payments data to CSV
+    function exportPaymentsData() {
+        let csv = 'Payment ID,Booking ID,Date,Amount,Method,Status\n';
+
+        allPayments.forEach(payment => {
+            const date = new Date(payment.paymentDate).toLocaleDateString();
+            csv += `${payment.paymentId},${payment.bookingId},"${date}",${payment.amount.toFixed(2)},"${payment.paymentMethod}","${payment.paymentStatus}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'payment_data.csv');
+        link.style.visibility = 'hidden';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Show toast notification
+    function showToast(title, message, type = 'success') {
+        $('#toastTitle').text(title);
+        $('#toastMessage').text(message);
+
+        const toast = $('#notificationToast');
+        const toastInstance = new bootstrap.Toast(toast);
+
+        if (type === 'error') {
+            toast.addClass('bg-danger text-white');
+        } else {
+            toast.removeClass('bg-danger text-white');
+        }
+
+        toastInstance.show();
+    }
+
+    // Check authentication
+    function checkAuth() {
+        if (!token) {
+            window.location.href = "login.html";
+        }
+    }
+
+    // Logout function
+    $('#logoutBtn').click(function() {
+        localStorage.removeItem("authToken");
+        window.location.href = "login.html";
+    });
+
+    // Check authentication on page load
+    checkAuth();
 </script>
 </body>
 </html>

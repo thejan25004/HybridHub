@@ -1,8 +1,6 @@
 package org.example.backend.dto;
 
 import lombok.*;
-import org.example.backend.entity.Payment;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -18,9 +16,4 @@ public class PaymentDTO {
     private BigDecimal amount;
     private String paymentMethod;
     private String paymentStatus;
-
-    // Additional details for frontend display
-    private String customerName;
-    private String serviceName;
-    private Date bookingDate;
 }

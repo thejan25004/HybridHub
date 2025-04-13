@@ -10,12 +10,15 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepo extends JpaRepository<Booking, Integer> {
     List<Booking> findByBookingDateAfter(Date date);
 
     List<Booking> findByServiceServiceId(Integer serviceId);
+
+    Optional<Booking> findById(Integer bookingId);
 
 
 }

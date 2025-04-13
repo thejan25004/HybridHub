@@ -135,14 +135,14 @@
     formData.append("photo", $("#photo")[0].files[0]);
 
     $.ajax({
-      url: "http://localhost:8080/api/v1/technician/save",  // Ensure this is correct
+      url: "http://localhost:8080/api/v1/technician/save",
       type: "POST",
       headers: {
         "Authorization": "Bearer " + token
       },
       data: formData,
-      processData: false,  // Don't process the data
-      contentType: false,  // Don't set content type
+      processData: false,
+      contentType: false,
       success: function () {
         Swal.fire({
           position: "top-end",
@@ -209,7 +209,7 @@
           success: function () {
             Swal.fire("Saved!", "Technician updated successfully.", "success");
             clearForm();
-            loadTechnicians();  // Refresh the list after update
+            loadTechnicians();
           },
           error: function (error) {
             console.error("Error:", error);

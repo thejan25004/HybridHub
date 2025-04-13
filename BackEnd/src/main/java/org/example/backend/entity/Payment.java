@@ -2,12 +2,11 @@ package org.example.backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "Payments")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,6 +24,7 @@ public class Payment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paymentDate;
 
+    @Column(nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +33,7 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    // Enum for payment methods
     public enum PaymentMethod {
         CREDIT_CARD("Credit Card"),
         CASH("Cash"),
@@ -49,6 +50,7 @@ public class Payment {
         }
     }
 
+    // Enum for payment status
     public enum PaymentStatus {
         PENDING("Pending"),
         COMPLETED("Completed"),
@@ -63,14 +65,5 @@ public class Payment {
         public String getDisplayName() {
             return displayName;
         }
-    }
-
-    // Constructor with default values for new payments
-    public Payment(Booking booking, BigDecimal amount, PaymentMethod paymentMethod) {
-        this.booking = booking;
-        this.amount = amount;
-        this.paymentMethod = paymentMethod;
-        this.paymentDate = new Date();
-        this.paymentStatus = PaymentStatus.PENDING;
     }
 }
